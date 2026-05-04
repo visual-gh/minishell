@@ -62,7 +62,7 @@ Minishell = a stripped-down bash. You replicate a useful subset of its behavior.
    loop back
 ```
 
-## Scope philosophy (Visual + duo)
+## Scope philosophy
 
 - Mandatory only. No bonus, no over-engineering.
 - One global variable, used **only** to store the last received signal number.

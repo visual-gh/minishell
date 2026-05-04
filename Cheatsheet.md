@@ -5,12 +5,22 @@ One-page reference. Detailed treatment lives in `Wiki/`.
 ## Pipeline
 
 ```
-readline → LEXER → PARSER → EXPANDER → EXECUTOR → wait → loop
+readline → LEXER → PARSER → HEREDOC → EXPANDER → EXECUTOR → wait → loop
 ```
 
 ## Token types
 
-`WORD | PIPE | REDIR_IN(<) | REDIR_OUT(>) | APPEND(>>) | HEREDOC(<<)`
+`TOK_WORD | TOK_PIPE | TOK_REDIR_IN(<) | TOK_REDIR_OUT(>) | TOK_APPEND(>>) | TOK_HEREDOC(<<)`
+
+End of token list = `next == NULL` (no `TOK_EOF` sentinel).
+
+## Redir types
+
+`REDIR_IN | REDIR_OUT | REDIR_APPEND | REDIR_HEREDOC`
+
+## Container shape
+
+Linked lists everywhere: `t_token`, `t_redir`, `t_cmd` all carry `next`. `t_shell` owns the head of the cmd list. No counts stored; count by walking when needed.
 
 ## Quote semantics
 
@@ -69,25 +79,33 @@ Builtin runs in **parent** if standalone, in **child** if in pipeline.
 ## fork/exec template (child)
 
 ```c
-signals_set_default();
-apply_redirs(c);                    // open + dup2 + close
-if (is_builtin(c->argv[0])) exit(run_builtin(sh, c));
-char *p = resolve_path(c->argv[0], sh->envp);
-if (!p) { not_found_msg(c->argv[0]); exit(127); }
+signals_child();
+apply_redirs(c->redirs);            /* open + dup2 + close */
+if (is_builtin(c->argv[0]))
+    exit(run_builtin(c, sh));
+p = resolve_path(c->argv[0], sh->envp);
+if (!p)
+{
+    print_error(c->argv[0], NULL, "command not found");
+    exit(127);
+}
 execve(p, c->argv, sh->envp);
-perror(p); exit(126);
+perror(p);
+exit(126);
 ```
 
 ## Pipeline (n cmds)
 
 ```
-create n-1 pipes
-for i in 0..n-1:
+n = count_cmds(sh->cmds)            /* walk the list once */
+malloc pipes[n-1] (each int[2])     /* no VLAs allowed */
+malloc pids[n]
+walk cmd list; for each (cmd, i):
     fork → child:
-        if i>0:   dup2(p[i-1][0], 0)
-        if i<n-1: dup2(p[i  ][1], 1)
+        if i>0:    dup2(pipes[i-1][0], 0)
+        if cmd->next: dup2(pipes[i][1], 1)
         close ALL pipe fds
-        apply this cmd's own redirs (override)
+        apply cmd->redirs (override)
         run as builtin or execve
 parent: close ALL pipe fds → waitpid each → capture LAST child's status
 ```
@@ -165,15 +183,24 @@ valgrind --leak-check=full --track-fds=yes \
 # diff against bash for every input from 10_EdgeCases.md
 ```
 
+## Signal modes
+
+| Mode | Function |
+|---|---|
+| Prompt waiting on readline | `signals_prompt()` |
+| Parent waiting on a child | `signals_wait()` |
+| Child process before execve | `signals_child()` |
+| Reading heredoc body | `signals_heredoc()` |
+
 ## 12-week roadmap
 
 | Wk | Goal |
 |---|---|
-| 1 | env copy, REPL skeleton, signals stub |
+| 1 | env copy, REPL skeleton, signals stubs |
 | 2 | lexer (all token types, quote tracking) |
-| 3 | parser (flat cmds, syntax errors) |
+| 3 | parser (cmd list, syntax errors) |
 | 4 | expander ($VAR, $?, quote strip) |
-| 5 | signals (3 modes, heredoc handler) |
+| 5 | signals (4 install points, heredoc handler) |
 | 6 | builtins minus export/exit |
 | 7 | export + exit + edge cases |
 | 8 | single-cmd executor + redirs |

@@ -23,9 +23,18 @@ void sigint_handler(int sig)
 
 Everywhere else (after readline returns, after waitpid returns) you read `g_signal`, react, and reset it to 0.
 
-## Three modes the shell goes through
+## Four install points the shell goes through
 
-The handlers must be **swapped** depending on the context:
+The handlers must be **swapped** depending on the context. The header exposes:
+
+```c
+void    signals_prompt(void);    /* mode 1: REPL waiting on readline */
+void    signals_wait(void);      /* mode 2a: parent waiting on a child */
+void    signals_child(void);     /* mode 2b: child process before execve */
+void    signals_heredoc(void);   /* mode 3: reading heredoc body */
+```
+
+Modes 2a and 2b are two sides of the same "child running" situation — the parent ignores SIGINT (so Ctrl-C goes only to the child), and the child restores defaults so it actually dies on Ctrl-C.
 
 ### Mode 1: Interactive prompt (waiting on `readline`)
 
@@ -56,9 +65,9 @@ void sigint_prompt(int sig)
 | Ctrl-C | parent ignores; kernel delivers to child (foreground process group). After child dies, status = 130. Print newline ourselves so prompt is on a fresh line. |
 | Ctrl-\\ | same idea — child dies with `Quit (core dumped)`; bash prints that. Status = 131. |
 
-So **before fork**: `signal(SIGINT, SIG_IGN); signal(SIGQUIT, SIG_IGN);`
-**In child, before exec**: restore default → `signal(SIGINT, SIG_DFL); signal(SIGQUIT, SIG_DFL);`
-**After waitpid**: re-install the prompt-mode handlers.
+So **before fork**: `signals_wait()` → `SIG_IGN` for SIGINT and SIGQUIT in the parent.
+**In child, before exec**: `signals_child()` → restore defaults (`SIG_DFL`).
+**After waitpid**: `signals_prompt()` re-installs the prompt-mode handlers.
 
 If `WTERMSIG(status) == SIGINT` → write `"\n"` to keep prompt clean. If `WTERMSIG(status) == SIGQUIT` → write `"Quit (core dumped)\n"`.
 
@@ -84,29 +93,31 @@ After readline returns NULL, check `g_signal == SIGINT` → discard heredoc, set
 ## Install/swap helpers
 
 ```c
-void signals_set_prompt(void)
+void    signals_prompt(void)
 {
-    struct sigaction sa = {0};
+    struct sigaction    sa;
+
+    ft_memset(&sa, 0, sizeof(sa));
     sa.sa_handler = sigint_prompt;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_RESTART;
-    sigaction(SIGINT,  &sa, NULL);
+    sigaction(SIGINT, &sa, NULL);
     signal(SIGQUIT, SIG_IGN);
 }
 
-void signals_set_exec(void)   // before fork in parent
+void    signals_wait(void)            /* parent, child running */
 {
     signal(SIGINT,  SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
 }
 
-void signals_set_default(void)   // in child before exec
+void    signals_child(void)           /* in child before exec */
 {
     signal(SIGINT,  SIG_DFL);
     signal(SIGQUIT, SIG_DFL);
 }
 
-void signals_set_heredoc(void)
+void    signals_heredoc(void)
 {
     signal(SIGINT,  sigint_heredoc);
     signal(SIGQUIT, SIG_IGN);
@@ -118,14 +129,21 @@ void signals_set_heredoc(void)
 ```c
 while (1)
 {
-    signals_set_prompt();
+    signals_prompt();
     line = readline("minishell$ ");
-    if (!line)            // Ctrl-D
-        { ft_putendl_fd("exit", 1); break; }
+    if (!line)            /* Ctrl-D */
+    {
+        ft_putendl_fd("exit", 1);
+        break ;
+    }
     if (g_signal == SIGINT)
-        { sh.last_status = 130; g_signal = 0; }
-    if (*line) add_history(line);
-    if (process_line(&sh, line) == 0) {}
+    {
+        sh.last_status = 130;
+        g_signal = 0;
+    }
+    if (*line)
+        add_history(line);
+    process_line(&sh, line);
     free(line);
 }
 ```

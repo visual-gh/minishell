@@ -1,6 +1,8 @@
 # 05 — Expander
 
-Walk every `argv[i]` and every redir target, replacing `$VAR` and `$?`, then strip surviving quote characters. Done in-place: free old string, set new.
+Walk every `argv[i]` and every redir target on every cmd in the pipeline, replacing `$VAR` and `$?`, then strip surviving quote characters. Done in-place: free old string, set new.
+
+Entry point in the header: `int expand_cmds(t_shell *shell)`. It iterates the cmd list (`shell->cmds`, then `cmd->next`, ...), and for each cmd walks its `argv` and its `redirs` list. Heredoc body expansion does **not** happen here — see `read_heredocs` and the heredoc stage below.
 
 ## What expands
 
@@ -49,7 +51,7 @@ $USER
 EOF
 ```
 
-The parser stored `quoted` on the heredoc redir. Expander uses that flag when reading the heredoc body to decide whether to expand each line.
+The parser stored `quoted` on the heredoc redir. The **heredoc stage** (`read_heredocs`, runs before this expander pass) consults that flag while reading each body line and applies expansion line-by-line right then. By the time `expand_cmds` runs, heredoc bodies are already finalised — `expand_cmds` never sees them. It only touches argv elements and redir targets (filenames / heredoc delimiters; the delimiter itself is never expanded — bash doesn't expand it either).
 
 ## Algorithm
 
@@ -92,13 +94,13 @@ Pick one. The simplest (and what most minishells do) is: **drop empty unquoted w
 
 ## Order of operations
 
-1. Lex
-2. Parse (syntax check, build cmds)
-3. **For each heredoc**: read body now (with expansion if delim was unquoted)
-4. **For each argv element + each redir target**: expand, then strip quotes
-5. Execute
+1. `lex` — produce token list
+2. `parse` — syntax check, build cmd list with redirs
+3. `read_heredocs` — for each `REDIR_HEREDOC` redir, read the body interactively with line-by-line expansion if its delimiter was unquoted
+4. `expand_cmds` — for each argv element + each redir target (non-heredoc): expand, then strip quotes
+5. `execute` — fork/exec the pipeline
 
-Expansion happens *after* parsing but *before* file lookup, PATH search, and exec.
+Expansion happens *after* parsing but *before* file lookup, PATH search, and exec. Heredoc bodies are finalised in step 3 so step 5 only deals with fds, not user input.
 
 ## Quote stripping subtlety
 

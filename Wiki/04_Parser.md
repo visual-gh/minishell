@@ -1,6 +1,6 @@
 # 04 — Parser
 
-Token list → flat `t_cmd[]` array. One linear walk, no recursion needed for mandatory.
+Token list → linked list of `t_cmd`. One linear walk, no recursion needed for mandatory.
 
 ## Grammar (informal)
 
@@ -15,21 +15,23 @@ Every command has at least one element (a redir or a word). An empty command bet
 ## Algorithm
 
 ```
-n_cmds = count(PIPE) + 1
-allocate cmds[n_cmds]
-i = 0  // cmd index
-for each token:
-    if token is PIPE:
-        finish current cmd; i++; continue
-    if token is REDIR_*:
-        next must be WORD (else syntax error)
-        append redir to cmds[i].redirs
-        consume next WORD
-    else (WORD):
-        append to cmds[i].argv
-finalize last cmd
+cur = new_cmd()                  // head of cmd list
+shell->cmds = cur
+for each token t:
+    if t->type == TOK_PIPE:
+        if cmd_empty(cur) || !t->next: syntax error
+        cur->next = new_cmd()
+        cur = cur->next
+    elif is_redir(t->type):
+        if !t->next || t->next->type != TOK_WORD: syntax error
+        append_redir(cur, t, t->next)
+        skip the next token (it was the target)
+    else (TOK_WORD):
+        append_argv(cur, t->value)
 NULL-terminate every argv
 ```
+
+`new_cmd()` returns a calloc'd `t_cmd`. `append_redir(cmd, redir_tok, target_tok)` builds a `t_redir` node and tail-appends to `cmd->redirs`. `append_argv(cmd, value)` grows `cmd->argv` by one (realloc with NULL-terminator) — or build an intermediate list of strings during parsing and flatten to `char **` at the end (cleaner under the Norm: list grows freely, single allocation at the end).
 
 ## Syntax errors to catch
 
@@ -47,14 +49,15 @@ Print to stderr, set `last_status = 2`, **abort the line** (don't execute any of
 
 Quick rule: a redir token must be followed by a WORD. A pipe must be preceded and followed by a non-empty command.
 
-## Why a flat table works
+## Why a linked list works
 
-Mandatory pipelines are linear: `c1 | c2 | c3 | c4`. No nesting. So the natural shape is a left-to-right array. Each `t_cmd` carries:
+Mandatory pipelines are linear: `c1 | c2 | c3 | c4`. No nesting. The natural shape is a forward-linked list. Each `t_cmd` carries:
 
 - its own `argv` (for `execve`)
-- its own `redirs[]` (applied in textual order before `exec`)
+- its own `redirs` list (applied in textual order before `exec`)
+- a `next` pointer to the following command in the pipeline
 
-The pipeline stitching is the executor's job: it creates `n_cmds-1` pipes and `dup2`s child fds.
+Pipeline stitching is the executor's job: it walks the list once to count commands, allocates `n - 1` pipes and `n` pids, then walks again to fork.
 
 ## Redirection order matters
 
@@ -65,45 +68,53 @@ The pipeline stitching is the executor's job: it creates `n_cmds-1` pipes and `d
 
 Apply redirs in the order they appeared. Each `>` truncates its target file even if a later redir takes over the fd. (This is observable behavior — bash creates *both* files.)
 
+The list preserves insertion order naturally: append at tail during parsing, walk head-to-tail during apply.
+
 ## Heredoc detection
 
-If a command has any `<<` redir, the heredoc must be **read at parse time** (or at least *before* forking the pipeline), because:
+When the parser sees `TOK_HEREDOC`, it stores the delimiter in a `t_redir` with `type = REDIR_HEREDOC` and the delimiter token's `quoted` flag copied to the redir's `quoted`. The body is **not** read here — that happens in the dedicated heredoc stage (`read_heredocs`) before the executor forks.
 
-- Heredoc reads from the user's terminal interactively.
-- It must finish before child execution starts.
-
-Implementation choice: collect heredoc bodies into temp files (e.g., `/tmp/.minishell_heredoc_<pid>_<n>`) and rewrite the redir to a normal `<`. Or pipe them to the child via an unnamed pipe written by the parent. See `06_Executor.md`.
+Implementation choice for body delivery: write the body into an unnamed pipe in the parent and hand the read end to the child as fd 0. See `06_Executor.md`.
 
 ## Pseudocode in C-ish form
 
 ```c
 int  parse(t_token *tokens, t_shell *sh)
 {
-    int n = count_cmds(tokens);
-    sh->cmds = ft_calloc(n, sizeof(t_cmd));
-    sh->n_cmds = n;
-    int  i = 0;
+    t_cmd	*cur;
+
+    cur = new_cmd();
+    if (!cur)
+        return (1);
+    sh->cmds = cur;
     while (tokens)
     {
         if (tokens->type == TOK_PIPE)
         {
-            if (cmd_empty(&sh->cmds[i]) || !tokens->next)
+            if (cmd_empty(cur) || !tokens->next)
                 return (syntax_err("|"));
-            i++;
+            cur->next = new_cmd();
+            cur = cur->next;
         }
         else if (is_redir(tokens->type))
         {
             if (!tokens->next || tokens->next->type != TOK_WORD)
                 return (syntax_err(redir_str(tokens->type)));
-            push_redir(&sh->cmds[i], tokens, tokens->next);
+            append_redir(cur, tokens, tokens->next);
             tokens = tokens->next;
         }
         else
-            push_argv(&sh->cmds[i], tokens->value);
+            append_argv(cur, tokens->value);
         tokens = tokens->next;
     }
     return (0);
 }
 ```
 
-Norm split: `parse`, `count_cmds`, `push_redir`, `push_argv`, `cmd_empty` — five functions, fits in one `parser.c`. Syntax helpers go in `parser_syntax.c`.
+Norm split: `parse`, `new_cmd`, `append_redir`, `append_argv`, `cmd_empty` — five functions, fits in one `parser.c`. Syntax helpers (`syntax_err`, `redir_str`, `is_redir`) go in `parser_syntax.c`.
+
+## Memory rules for the parser
+
+- Every node allocated must be freed by `free_cmd_list` on success or on error.
+- On syntax error: free `sh->cmds`, set `sh->cmds = NULL`, set `last_status = 2`, return non-zero.
+- `argv` strings are duplicated from the token's `value` (or moved — pick one and stick to it). If moved, the lexer's `free_tokens` must not free those slots; mark them as taken or keep the duplicate path for simplicity.

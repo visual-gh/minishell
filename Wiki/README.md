@@ -18,12 +18,6 @@ Full course on the project. Read in order.
 
 Quick reference at the project root: `Cheatsheet.md`.
 
-## Division of work
-
-- **P1**: lexer, parser, expander, signals, architecture
-- **P2**: builtins, executor (fork/exec/pipe), env handling
-- **Together**: heredoc, error semantics, valgrind sweep
-
 ## Golden rule
 
 When in doubt → **ask bash**. Run the equivalent in real bash, observe exit code (`echo $?`), copy the behavior. Do not invent.

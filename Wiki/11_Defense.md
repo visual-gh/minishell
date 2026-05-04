@@ -6,16 +6,20 @@ The questions you must answer cold. Practice saying these out loud.
 
 **Q: Walk me through what happens when I type `ls -l | grep foo > out`.**
 1. `readline` returns the line.
-2. Lexer produces: WORD(ls), WORD(-l), PIPE, WORD(grep), WORD(foo), REDIR_OUT, WORD(out).
-3. Parser builds two `t_cmd`: `[ls, -l]` with no redirs, `[grep, foo]` with one R_OUT redir to `out`.
-4. Expander walks each WORD — nothing to expand here, no quotes to strip, words unchanged.
-5. Executor sees `n_cmds=2`, creates 1 pipe.
-6. Forks child A: dup2 pipe[1] → stdout, exec ls.
-7. Forks child B: dup2 pipe[0] → stdin, opens `out` (O_WRONLY|O_CREAT|O_TRUNC), dup2 → stdout, execs grep.
-8. Parent closes both pipe ends, waitpid both children, captures grep's exit status into `last_status`.
+2. Lexer produces: TOK_WORD(ls), TOK_WORD(-l), TOK_PIPE, TOK_WORD(grep), TOK_WORD(foo), TOK_REDIR_OUT, TOK_WORD(out).
+3. Parser builds a two-node `t_cmd` list: head = `[ls, -l]` with no redirs, head->next = `[grep, foo]` with one `REDIR_OUT` redir targeting `out`.
+4. `read_heredocs` runs but does nothing (no `<<` in this line).
+5. `expand_cmds` walks each argv element — nothing to expand, no quotes to strip, words unchanged.
+6. Executor counts the cmd list (n=2), allocates one pipe and two pids.
+7. Forks child A: dup2 pipe[1] → stdout, exec ls.
+8. Forks child B: dup2 pipe[0] → stdin, opens `out` (O_WRONLY|O_CREAT|O_TRUNC), dup2 → stdout, execs grep.
+9. Parent closes both pipe ends, waitpid both children, captures grep's exit status into `last_status`.
 
-**Q: Why a flat command table instead of an AST?**
+**Q: Why a flat linked-list of commands instead of an AST?**
 No `&&`/`||`/`()` in mandatory. Pipelines are linear. AST adds complexity I don't need.
+
+**Q: Why a linked list rather than an array of commands?**
+One-pass parse — append-as-you-go using libft list helpers. No pre-counting, no `realloc`. Each operation stays inside the Norm's 25-line / 5-variable budget. The executor walks the list once to count it, then mallocs the pipe/pid arrays — about four extra lines, the only cost.
 
 **Q: What's in your global variable?**
 A `volatile sig_atomic_t g_signal`. Just the signal number. Nothing else.
@@ -26,7 +30,7 @@ A `volatile sig_atomic_t g_signal`. Just the signal number. Nothing else.
 Run `valgrind --track-fds=yes`. After clean exit, only fds 0/1/2 remain (plus readline's tty fd if applicable).
 
 **Q: How do you free everything on `exit`?**
-`clean_and_exit()`: free `envp` slots, free pending `cmds` array, free pending tokens, `rl_clear_history()`, then `exit()`.
+`clean_and_exit()`: `free_str_array(envp)`, `free_cmd_list(shell->cmds)` (which recursively calls `free_redirs` on each node), free any pending token list with `free_tokens`, `rl_clear_history()`, then `exit()`.
 
 **Q: What if malloc fails mid-line?**
 Fail the line: free what's been allocated, set `last_status = 1`, write to stderr, return to prompt. Don't crash.
@@ -105,6 +109,11 @@ Split aggressively: `run_pipeline`, `setup_pipes`, `fork_child`, `child_dup`, `p
 
 **Q: How do you handle 5-var max in long functions?**
 Pack related state into a struct (`t_pipe_ctx { int **pipes; pid_t *pids; int n; }`) when needed.
+
+## Heredoc as its own stage
+
+**Q: Why isn't heredoc reading folded into the expander?**
+Heredoc reads stdin interactively, line by line, and must support Ctrl-C cancellation cleanly. Putting it in its own stage between parser and expander gives one clear place to swap signal handlers (`signals_heredoc` → `signals_prompt`), one place to abort if Ctrl-C fires, and keeps the executor unaware that any of this happened — by exec time, the heredoc body lives behind a plain fd.
 
 ## What you'd do differently
 

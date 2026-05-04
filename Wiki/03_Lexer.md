@@ -63,7 +63,7 @@ while line[i]:
 push TOK_WORD with substring [start..i)
 ```
 
-Track `quoted` flag on the token — set it if any quote char was seen, with a code identifying whether `$` should expand (i.e., presence of any non-single-quoted span).
+Track the `quoted` flag on the token — set it to `1` if any quote char appeared while building this WORD, otherwise `0`. The expander walks the string itself and tracks per-character quote state; the lexer's flag exists only so the expander can decide whether an empty post-expansion word survives (`""` → keep, unquoted empty → drop).
 
 ## Unclosed quote = error
 
@@ -80,12 +80,12 @@ minishell: syntax error: unexpected end of input (unclosed quote)
 | Input | Tokens |
 |---|---|
 | `ls -la` | WORD(`ls`) WORD(`-la`) |
-| `cat<file` | WORD(`cat`) REDIR_IN WORD(`file`) |
-| `echo "hi"` | WORD(`echo`) WORD(`"hi"`, quoted=DQ) |
-| `echo a"b"c` | WORD(`echo`) WORD(`a"b"c`, quoted=mixed) |
-| `cat<<EOF` | WORD(`cat`) HEREDOC WORD(`EOF`) |
-| `'$USER'` | WORD(`'$USER'`, quoted=SQ) |
-| `"$USER"` | WORD(`"$USER"`, quoted=DQ) |
+| `cat<file` | WORD(`cat`) TOK_REDIR_IN WORD(`file`) |
+| `echo "hi"` | WORD(`echo`) WORD(`"hi"`, quoted=1) |
+| `echo a"b"c` | WORD(`echo`) WORD(`a"b"c`, quoted=1) |
+| `cat<<EOF` | WORD(`cat`) TOK_HEREDOC WORD(`EOF`) |
+| `'$USER'` | WORD(`'$USER'`, quoted=1) |
+| `"$USER"` | WORD(`"$USER"`, quoted=1) |
 
 Note: `a"b"c` is **one** token, not three. Adjacent quoted/unquoted runs glue into a single WORD.
 
