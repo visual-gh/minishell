@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/05/06 18:27:43 by Visual           ###   ########.fr       */
+/*   Updated: 2026/05/16 15:51:09 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,13 @@ extern volatile sig_atomic_t	g_signal;
 /*  TYPES                                                                     */
 /* ========================================================================== */
 
+// WORD			= ls cat hello etc...
+// PIPE			= |
+// REDIR_IN		= <
+// REDIR_OUT	= >
+// APPEND		= >>
+// HEREDOC		= <<
+
 typedef enum e_tok_type
 {
 	TOK_WORD,
@@ -51,6 +58,7 @@ typedef struct s_token
 	t_tok_type		type;
 	char			*value;
 	int				quoted;
+	int				join;
 	struct s_token	*next;
 }	t_token;
 
@@ -114,8 +122,13 @@ void	env_unset(char ***envp, const char *key);
 /*  PIPELINE — LEXER                                                          */
 /* ========================================================================== */
 
-t_token	*lex(char *line);
+t_token	*lexer(char *input);
 void	free_tokens(t_token *tokens);
+
+// token_init functions   will clean after
+
+t_token *token_init(t_tok_type type, char *value, int quoted);
+void	add_token(t_token **head, t_token *new_node);
 
 /* ========================================================================== */
 /*  PIPELINE — PARSER                                                         */
