@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
+/*   By: danielad <danielad@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/05/04 03:06:09 by Visual           ###   ########.fr       */
+/*   Updated: 2026/05/05 21:58:46 by danielad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,12 @@ extern volatile sig_atomic_t	g_signal;
 
 typedef enum e_tok_type
 {
-	TOK_WORD,
-	TOK_PIPE,
-	TOK_REDIR_IN,
-	TOK_REDIR_OUT,
-	TOK_APPEND,
-	TOK_HEREDOC,
+	TOK_WORD,    //ls cat hello ..
+	TOK_PIPE,     // | 
+	TOK_REDIR_IN,  // <
+	TOK_REDIR_OUT,  // >
+	TOK_APPEND,     // >>
+	TOK_HEREDOC,	// <<
 }	t_tok_type;
 
 typedef struct s_token
@@ -51,6 +51,7 @@ typedef struct s_token
 	t_tok_type		type;
 	char			*value;
 	int				quoted;
+	int				join;
 	struct s_token	*next;
 }	t_token;
 
@@ -115,7 +116,7 @@ void	env_free(char **envp);
 /*  PIPELINE — LEXER                                                          */
 /* ========================================================================== */
 
-t_token	*lex(char *line);
+t_token	*lexer(char *input);
 void	free_tokens(t_token *tokens);
 
 /* ========================================================================== */
@@ -166,5 +167,16 @@ int		print_error(char *cmd, char *arg, char *msg);
 void	free_cmd_list(t_cmd *cmds);
 void	free_redirs(t_redir *redirs);
 void	free_str_array(char **arr);
+
+
+
+// token_init functions   will clean after
+
+t_token *token_init(t_tok_type type, char *value, int quoted);
+void	add_token(t_token **head, t_token *new_node);
+
+
+
+
 
 #endif
