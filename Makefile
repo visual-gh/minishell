@@ -6,7 +6,7 @@
 #    By: Visual <github.com/visual-gh>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/06 19:05:23 by Visual            #+#    #+#              #
-#    Updated: 2026/05/06 19:13:40 by Visual           ###   ########.fr        #
+#    Updated: 2026/05/06 20:07:05 by Visual           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ LIBS	= $(LIBFT) -lreadline
 SRCS	= src/main.c \
 		  src/shell_init.c \
 		  src/shell_loop.c \
+		  src/signals/signals.c \
 		  src/utils/error.c \
 		  src/utils/free.c
 
