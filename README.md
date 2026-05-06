@@ -11,7 +11,7 @@ Status: phase 0 in progress. Project compiles, exits 0, rejects bad argc.
 - [ ] `src/env/env_get.c`: lookup by key
 - [ ] `src/env/env_set.c`: insert or update key=val
 - [ ] `src/env/env_unset.c`: remove key, compact array
-- [ ] `src/signals/signals.c`: `signals_prompt` (SIGINT redraws, SIGQUIT ignored), stubs for child / wait / heredoc
+- [x] `src/signals/signals.c`: `signals_prompt` (SIGINT redraws, SIGQUIT ignored), stubs for child / wait / heredoc
 - [x] `src/utils/error.c`: `print_error`
 - [x] `src/utils/free.c`: `free_cmd_list`, `free_redirs`, `free_str_array`
 - [x] `Makefile`: -Wall -Wextra -Werror, -lreadline, libft auto-build, no relink
