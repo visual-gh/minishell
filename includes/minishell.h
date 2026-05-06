@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/05/04 03:06:09 by Visual           ###   ########.fr       */
+/*   Updated: 2026/05/06 18:27:43 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,6 @@ char	**env_init(char **envp);
 char	*env_get(char **envp, const char *key);
 int		env_set(char ***envp, const char *key, const char *val);
 void	env_unset(char ***envp, const char *key);
-void	env_free(char **envp);
 
 /* ========================================================================== */
 /*  PIPELINE — LEXER                                                          */
