@@ -7,15 +7,15 @@ Status: phase 0 in progress. Project compiles, exits 0, rejects bad argc.
 - [x] `src/main.c`: argc check, init, loop, free, return last_status
 - [x] `src/shell_init.c`: allocate `t_shell`, dup envp, install signals
 - [x] `src/shell_loop.c`: readline + add_history loop, Ctrl-D exits
-- [ ] `src/env/env_init.c`: deep copy envp
-- [ ] `src/env/env_get.c`: lookup by key
-- [ ] `src/env/env_set.c`: insert or update key=val
-- [ ] `src/env/env_unset.c`: remove key, compact array
+- [x] `src/env/env_init.c`: deep copy envp
+- [x] `src/env/env_get.c`: lookup by key
+- [x] `src/env/env_set.c`: insert or update key=val
+- [x] `src/env/env_unset.c`: remove key, compact array
 - [x] `src/signals/signals.c`: `signals_prompt` (SIGINT redraws, SIGQUIT ignored), stubs for child / wait / heredoc
 - [x] `src/utils/error.c`: `print_error`
 - [x] `src/utils/free.c`: `free_cmd_list`, `free_redirs`, `free_str_array`
 - [x] `Makefile`: -Wall -Wextra -Werror, -lreadline, libft auto-build, no relink
-- [ ] Smoke test: prompt works, Ctrl-C redraws, Ctrl-D exits, valgrind clean
+- [x] Smoke test: prompt works, Ctrl-C redraws, Ctrl-D exits, valgrind clean
 
 ## Phase 1: Lexer
 

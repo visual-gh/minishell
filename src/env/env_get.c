@@ -1,30 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   shell_init.c                                       :+:      :+:    :+:   */
+/*   env_get.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/06 18:38:56 by Visual            #+#    #+#             */
-/*   Updated: 2026/05/07 00:55:53 by Visual           ###   ########.fr       */
+/*   Created: 2026/05/07 16:28:44 by Visual            #+#    #+#             */
+/*   Updated: 2026/05/07 17:38:26 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_shell	*shell_init(char **envp)
+char	*env_get(char **envp, const char *key)
 {
-	t_shell	*shell;
+	size_t	klen;
+	int		i;
 
-	shell = ft_calloc(1, sizeof(t_shell));
-	if (!shell)
-		return (NULL);
-	shell->envp = env_init(envp);
-	if (!shell->envp)
+	klen = ft_strlen(key);
+	i = 0;
+	while (envp[i])
 	{
-		shell_free(shell);
-		return (NULL);
+		if (ft_strncmp(envp[i], key, klen) == 0 && envp[i][klen] == '=')
+			return (envp[i] + klen + 1);
+		i++;
 	}
-	signals_prompt();
-	return (shell);
+	return (NULL);
 }

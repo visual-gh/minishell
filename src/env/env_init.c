@@ -1,30 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   shell_init.c                                       :+:      :+:    :+:   */
+/*   env_init.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/06 18:38:56 by Visual            #+#    #+#             */
-/*   Updated: 2026/05/07 00:55:53 by Visual           ###   ########.fr       */
+/*   Created: 2026/05/07 00:47:59 by Visual            #+#    #+#             */
+/*   Updated: 2026/05/08 02:39:16 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_shell	*shell_init(char **envp)
+char	**env_init(char **envp)
 {
-	t_shell	*shell;
+	char	**copy;
+	int		count;
+	int		i;
 
-	shell = ft_calloc(1, sizeof(t_shell));
-	if (!shell)
+	count = 0;
+	while (envp[count])
+		count++;
+	copy = ft_calloc(count + 1, sizeof(char *));
+	if (!copy)
 		return (NULL);
-	shell->envp = env_init(envp);
-	if (!shell->envp)
+	i = 0;
+	while (i < count)
 	{
-		shell_free(shell);
-		return (NULL);
+		copy[i] = ft_strdup(envp[i]);
+		if (!copy[i])
+		{
+			free_str_array(copy);
+			return (NULL);
+		}
+		i++;
 	}
-	signals_prompt();
-	return (shell);
+	return (copy);
 }
