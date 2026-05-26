@@ -13,23 +13,41 @@ void	print_tokens(t_token *tokens)
 
 int	main(void)
 {
-	t_token	*head;
-	t_token	*tok;
+	// t_token	*head;
+	// t_token	*tok;
 
-	head = NULL;
+	// head = NULL;
 
-	tok = token_init(TOK_WORD, "echo", 0);
-	add_token(&head, tok);
+	// tok = token_init(TOK_WORD, "echo", 0);
+	// add_token(&head, tok);
 
-	tok = token_init(TOK_PIPE, NULL, 0);
-	add_token(&head, tok);
+	// tok = token_init(TOK_PIPE, NULL, 0);
+	// add_token(&head, tok);
 
-	tok = token_init(TOK_WORD, "hello world", 1);
-	add_token(&head, tok);
+	// tok = token_init(TOK_WORD, "hello world", 1);
+	// add_token(&head, tok);
 
-	tok = token_init(TOK_WORD, "$USER", 2);
-	add_token(&head, tok);
+	// tok = token_init(TOK_WORD, "$USER", 2);
+	// add_token(&head, tok);
 
-	print_tokens(head);
+	// print_tokens(head);
+	    char    *input;
+    t_token *tokens;
+
+    while (1)
+    {
+        input = readline("minishell> ");
+        if (input == NULL)
+            break ;
+        tokens = lexer(input);
+        if (tokens == NULL)
+            ft_printf("lexer returned NULL\n");
+        else
+        {
+            print_tokens(tokens);
+            free_tokens(tokens);
+        }
+        free(input);
+    }
 	return (0);
 }
