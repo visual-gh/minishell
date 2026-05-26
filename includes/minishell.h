@@ -6,7 +6,7 @@
 /*   By: danielad <danielad@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/05/05 21:58:46 by danielad         ###   ########.fr       */
+/*   Updated: 2026/05/20 23:25:59 by danielad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,8 @@ void	env_free(char **envp);
 /*  PIPELINE — LEXER                                                          */
 /* ========================================================================== */
 
-t_token	*lexer(char *input);
-void	free_tokens(t_token *tokens);
+//t_token	*lexer(char *input);
+//void	free_tokens(t_token *tokens);
 
 /* ========================================================================== */
 /*  PIPELINE — PARSER                                                         */
@@ -174,6 +174,19 @@ void	free_str_array(char **arr);
 
 t_token *token_init(t_tok_type type, char *value, int quoted);
 void	add_token(t_token **head, t_token *new_node);
+
+int    if_pipe(t_token **head, int *i);
+int    if_redir(t_token **head, int *i, int sep);
+int    if_quotes(t_token **head, int *i, char *input);
+int    if_word(t_token **head, int *i, char *input);
+
+
+int    is_separator(char *str, int i);
+t_token    *lexer(char *input);
+
+void    free_tokens(t_token *head);
+int    print_error(char *cmd, char *arg, char *msg);
+
 
 
 
