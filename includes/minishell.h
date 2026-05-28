@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
+/*   By: danielad <danielad@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/05/16 15:51:09 by Visual           ###   ########.fr       */
+/*   Updated: 2026/05/20 23:25:59 by danielad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,12 @@ extern volatile sig_atomic_t	g_signal;
 
 typedef enum e_tok_type
 {
-	TOK_WORD,
-	TOK_PIPE,
-	TOK_REDIR_IN,
-	TOK_REDIR_OUT,
-	TOK_APPEND,
-	TOK_HEREDOC,
+	TOK_WORD,    //ls cat hello ..
+	TOK_PIPE,     // | 
+	TOK_REDIR_IN,  // <
+	TOK_REDIR_OUT,  // >
+	TOK_APPEND,     // >>
+	TOK_HEREDOC,	// <<
 }	t_tok_type;
 
 typedef struct s_token
@@ -122,8 +122,8 @@ void	env_unset(char ***envp, const char *key);
 /*  PIPELINE — LEXER                                                          */
 /* ========================================================================== */
 
-t_token	*lexer(char *input);
-void	free_tokens(t_token *tokens);
+//t_token	*lexer(char *input);
+//void	free_tokens(t_token *tokens);
 
 // token_init functions   will clean after
 
@@ -178,5 +178,29 @@ int		print_error(char *cmd, char *arg, char *msg);
 void	free_cmd_list(t_cmd *cmds);
 void	free_redirs(t_redir *redirs);
 void	free_str_array(char **arr);
+
+
+
+// token_init functions   will clean after
+
+t_token *token_init(t_tok_type type, char *value, int quoted);
+void	add_token(t_token **head, t_token *new_node);
+
+int    if_pipe(t_token **head, int *i);
+int    if_redir(t_token **head, int *i, int sep);
+int    if_quotes(t_token **head, int *i, char *input);
+int    if_word(t_token **head, int *i, char *input);
+
+
+int    is_separator(char *str, int i);
+t_token    *lexer(char *input);
+
+void    free_tokens(t_token *head);
+int    print_error(char *cmd, char *arg, char *msg);
+
+
+
+
+
 
 #endif
