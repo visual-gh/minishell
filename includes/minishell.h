@@ -36,6 +36,13 @@ extern volatile sig_atomic_t	g_signal;
 /*  TYPES                                                                     */
 /* ========================================================================== */
 
+// WORD			= ls cat hello etc...
+// PIPE			= |
+// REDIR_IN		= <
+// REDIR_OUT	= >
+// APPEND		= >>
+// HEREDOC		= <<
+
 typedef enum e_tok_type
 {
 	TOK_WORD,    //ls cat hello ..
@@ -110,7 +117,6 @@ char	**env_init(char **envp);
 char	*env_get(char **envp, const char *key);
 int		env_set(char ***envp, const char *key, const char *val);
 void	env_unset(char ***envp, const char *key);
-void	env_free(char **envp);
 
 /* ========================================================================== */
 /*  PIPELINE — LEXER                                                          */
@@ -118,6 +124,11 @@ void	env_free(char **envp);
 
 //t_token	*lexer(char *input);
 //void	free_tokens(t_token *tokens);
+
+// token_init functions   will clean after
+
+t_token *token_init(t_tok_type type, char *value, int quoted);
+void	add_token(t_token **head, t_token *new_node);
 
 /* ========================================================================== */
 /*  PIPELINE — PARSER                                                         */
