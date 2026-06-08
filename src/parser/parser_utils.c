@@ -93,17 +93,3 @@ int 	parse_word(t_cmd *cmd, t_token **tok)
 	}
 	return (0);
 }
-
-static int	parse_token(t_cmd *cmd, t_token **tok)
-{
-	if ((*tok)->type == TOK_REDIR_IN || (*tok)->type == TOK_REDIR_OUT || (*tok)->type == TOK_APPEND || (*tok)->type == TOK_HEREDOC)
-		return (parse_redir(cmd, tok));
-	else if ((*tok)->type == TOK_WORD)
-		return (parse_word(cmd, tok));
-}
-
-//redir new ---
-//add redir---
-//parse redir ----
-//parse word
-//parse token
