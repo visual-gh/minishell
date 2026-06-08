@@ -69,3 +69,8 @@ char    **make_argv(t_token *tok, int count)
     argv[i] = NULL;
     return (argv);
 }
+
+//cmd new
+//add cmd
+//count args
+//make argv
