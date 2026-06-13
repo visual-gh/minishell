@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/05/16 15:51:09 by Visual           ###   ########.fr       */
+/*   Updated: 2026/06/09 16:18:23 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,8 @@ int		read_heredocs(t_shell *shell);
 /* ========================================================================== */
 
 int		expand_cmds(t_shell *shell);
+char	*expand_word(char *word, t_shell *shell);
+char	*expand_var(char *str, int *i, t_shell *shell);
 
 /* ========================================================================== */
 /*  PIPELINE — EXECUTOR                                                       */
