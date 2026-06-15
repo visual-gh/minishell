@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 14:21:01 by Visual            #+#    #+#             */
-/*   Updated: 2026/06/13 20:01:11 by Visual           ###   ########.fr       */
+/*   Updated: 2026/06/15 17:32:52 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,11 @@ static char	*strjoin_free(char *s1, char *s2)
 {
 	char	*res;
 
+	if (!s1 || !s2)
+	{
+		free(s1);
+		return (NULL);
+	}
 	res = ft_strjoin(s1, s2);
 	free(s1);
 	return (res);
