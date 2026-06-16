@@ -14,7 +14,14 @@ t_token *token_init(t_tok_type type, char *value, int quoted)
 		return (NULL);
 	token->type = type; // store what kind of token it is
 	if (value != NULL)  // if there is a stirnf make a copy of it so it doesent get lost if changed or freed
+	{	
 		token->value = ft_strdup(value);
+		if (token->value == NULL)
+		{
+			free(token);
+			return (NULL);
+		}
+	}
 	else
 		token->value = NULL;
 	token->quoted = quoted; // store if quoted or not, (0 = unquoted   1 = quoted and 2 = double quoted)
