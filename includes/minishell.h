@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: danielad <danielad@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/06/09 16:18:23 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/17 19:59:50 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 # include <signal.h>
 # include <errno.h>
 # include <string.h>
+# include <limits.h>
+# include <stdint.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../libft/libft.h"
@@ -46,7 +48,7 @@ extern volatile sig_atomic_t	g_signal;
 typedef enum e_tok_type
 {
 	TOK_WORD,    //ls cat hello ..
-	TOK_PIPE,     // | 
+	TOK_PIPE,     // |
 	TOK_REDIR_IN,  // <
 	TOK_REDIR_OUT,  // >
 	TOK_APPEND,     // >>
@@ -164,13 +166,14 @@ int		run_builtin(t_cmd *cmd, t_shell *shell);
 /*  BUILTINS                                                                  */
 /* ========================================================================== */
 
-int		builtin_echo(t_cmd *cmd);
-int		builtin_cd(t_cmd *cmd, t_shell *shell);
-int		builtin_pwd(void);
-int		builtin_export(t_cmd *cmd, t_shell *shell);
-int		builtin_unset(t_cmd *cmd, t_shell *shell);
-int		builtin_env(t_shell *shell);
-int		builtin_exit(t_cmd *cmd, t_shell *shell);
+int		ft_echo(t_cmd *cmd);
+int		ft_cd(t_cmd *cmd, t_shell *shell);
+int		ft_pwd(void);
+int		ft_export(t_cmd *cmd, t_shell *shell);
+int		ft_unset(t_cmd *cmd, t_shell *shell);
+int		ft_env(t_shell *shell);
+int		ft_exit(t_cmd *cmd, t_shell *shell);
+void	print_export(char **envp);
 
 /* ========================================================================== */
 /*  ERRORS / FREE                                                             */

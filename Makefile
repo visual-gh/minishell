@@ -6,7 +6,7 @@
 #    By: Visual <github.com/visual-gh>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/06 19:05:23 by Visual            #+#    #+#              #
-#    Updated: 2026/05/08 19:40:41 by Visual           ###   ########.fr        #
+#    Updated: 2026/07/19 15:34:23 by Visual           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,15 @@ SRCS	= src/main.c \
 		  src/env/env_unset.c \
 		  src/signals/signals.c \
 		  src/utils/error.c \
-		  src/utils/free.c
+		  src/utils/free.c \
+		  src/builtins/echo.c \
+		  src/builtins/pwd.c \
+		  src/builtins/cd.c \
+		  src/builtins/export.c \
+		  src/builtins/export_print.c \
+		  src/builtins/unset.c \
+		  src/builtins/env.c \
+		  src/builtins/exit.c
 
 OBJS	= $(SRCS:.c=.o)
 
