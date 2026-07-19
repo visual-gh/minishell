@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/17 19:59:50 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/19 17:19:37 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ typedef struct s_redir
 	t_redir_type	type;
 	char			*target;
 	int				quoted;
+	int				heredoc_fd;
 	struct s_redir	*next;
 }	t_redir;
 
@@ -158,9 +159,12 @@ char	*expand_var(char *str, int *i, t_shell *shell);
 
 int		execute(t_shell *shell);
 int		apply_redirs(t_redir *redirs);
+int		apply_redirs_ret(t_redir *redirs);
 char	*resolve_path(char *cmd, char **envp);
 int		is_builtin(char *name);
 int		run_builtin(t_cmd *cmd, t_shell *shell);
+int		exit_code_from(int wstatus);
+int		run_single(t_shell *shell, t_cmd *cmd);
 
 /* ========================================================================== */
 /*  BUILTINS                                                                  */
