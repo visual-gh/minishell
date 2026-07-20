@@ -6,7 +6,7 @@
 #    By: Visual <github.com/visual-gh>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/06 19:05:23 by Visual            #+#    #+#              #
-#    Updated: 2026/07/20 15:58:03 by Visual           ###   ########.fr        #
+#    Updated: 2026/07/20 19:57:01 by Visual           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,11 @@ SRCS	= src/main.c \
 		  src/env/env_set.c \
 		  src/env/env_unset.c \
 		  src/signals/signals.c \
+		  src/signals/signals_heredoc.c \
+		  src/heredoc/heredoc.c \
+		  src/expander/expander.c \
+		  src/expander/expander_var.c \
+		  src/expander/expander_word.c \
 		  src/utils/error.c \
 		  src/utils/free.c \
 		  src/builtins/echo.c \

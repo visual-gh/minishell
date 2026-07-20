@@ -1,42 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   signals_heredoc.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/06 19:45:38 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/20 16:25:28 by Visual           ###   ########.fr       */
+/*   Created: 2026/07/20 16:25:43 by Visual            #+#    #+#             */
+/*   Updated: 2026/07/20 17:08:01 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-volatile sig_atomic_t	g_signal = 0;
-
-static void	sigint_prompt(int sig)
+static void	sigint_heredoc(int sig)
 {
 	g_signal = sig;
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
+	close(STDIN_FILENO);
 }
 
-void	signals_prompt(void)
+void	signals_heredoc(void)
 {
-	signal(SIGINT, sigint_prompt);
-	signal(SIGQUIT, SIG_IGN);
-}
-
-void	signals_child(void)
-{
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-}
-
-void	signals_wait(void)
-{
-	signal(SIGINT, SIG_IGN);
+	signal(SIGINT, sigint_heredoc);
 	signal(SIGQUIT, SIG_IGN);
 }
