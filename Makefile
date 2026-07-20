@@ -6,7 +6,7 @@
 #    By: Visual <github.com/visual-gh>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/06 19:05:23 by Visual            #+#    #+#              #
-#    Updated: 2026/07/19 15:34:23 by Visual           ###   ########.fr        #
+#    Updated: 2026/07/20 15:58:03 by Visual           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,17 @@ SRCS	= src/main.c \
 		  src/builtins/export_print.c \
 		  src/builtins/unset.c \
 		  src/builtins/env.c \
-		  src/builtins/exit.c
+		  src/builtins/exit.c \
+		  src/executor/execute.c \
+		  src/executor/exit_status.c \
+		  src/executor/is_builtin.c \
+		  src/executor/pipeline.c \
+		  src/executor/pipeline_utils.c \
+		  src/executor/redirs.c \
+		  src/executor/resolve_path.c \
+		  src/executor/run_builtin.c \
+		  src/executor/run_child.c \
+		  src/executor/single.c
 
 OBJS	= $(SRCS:.c=.o)
 
