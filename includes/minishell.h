@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/19 17:19:37 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/19 18:40:32 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,11 @@ int		is_builtin(char *name);
 int		run_builtin(t_cmd *cmd, t_shell *shell);
 int		exit_code_from(int wstatus);
 int		run_single(t_shell *shell, t_cmd *cmd);
+int		count_cmds(t_cmd *cmds);
+int		**alloc_pipes(int n);
+void	close_pipes(int **pipes);
+void	run_child(t_shell *shell, t_cmd *cmd);
+int		run_pipeline(t_shell *shell);
 
 /* ========================================================================== */
 /*  BUILTINS                                                                  */

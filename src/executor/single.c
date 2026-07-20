@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 17:12:09 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/19 18:25:07 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/20 02:13:45 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,25 +50,6 @@ static int	run_builtin_in_parent(t_shell *shell, t_cmd *cmd)
 	return (status);
 }
 
-static void	exec_child(t_shell *shell, t_cmd *cmd)
-{
-	char	*path;
-
-	signals_child();
-	apply_redirs(cmd->redirs);
-	if (is_builtin(cmd->argv[0]))
-		exit(run_builtin(cmd, shell));
-	path = resolve_path(cmd->argv[0], shell->envp);
-	if (!path)
-	{
-		print_error(cmd->argv[0], NULL, "command not found");
-		exit(127);
-	}
-	execve(path, cmd->argv, shell->envp);
-	perror(path);
-	exit(126);
-}
-
 static int	fork_exec(t_shell *shell, t_cmd *cmd)
 {
 	pid_t	pid;
@@ -76,7 +57,7 @@ static int	fork_exec(t_shell *shell, t_cmd *cmd)
 
 	pid = fork();
 	if (pid == 0)
-		exec_child(shell, cmd);
+		run_child(shell, cmd);
 	signals_wait();
 	waitpid(pid, &wstatus, 0);
 	signals_prompt();
