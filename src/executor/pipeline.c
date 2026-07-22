@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 18:42:29 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/20 02:12:42 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/22 19:54:47 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,15 @@ static pid_t	*spawn_children(t_shell *shell, int **pipes, int total)
 	int		i;
 
 	pids = malloc(sizeof(pid_t) * total);
+	if (!pids)
+		return (NULL);
 	cmd = shell->cmds;
 	i = 0;
 	while (cmd)
 	{
 		pids[i] = fork();
+		if (pids[i] < 0)
+			return (print_error(NULL, NULL, "fork failed"), free(pids), NULL);
 		if (pids[i] == 0)
 			child_body(shell, cmd, pipes, i);
 		cmd = cmd->next;
@@ -71,7 +75,11 @@ int	run_pipeline(t_shell *shell)
 
 	total = count_cmds(shell->cmds);
 	pipes = alloc_pipes(total - 1);
+	if (!pipes)
+		return (print_error(NULL, NULL, "pipe failed"), 1);
 	pids = spawn_children(shell, pipes, total);
+	if (!pids)
+		return (close_pipes(pipes), 1);
 	close_pipes(pipes);
 	status = wait_all(pids, total);
 	free(pids);
