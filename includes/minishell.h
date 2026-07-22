@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/19 18:40:32 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/22 16:43:06 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,12 @@ extern volatile sig_atomic_t	g_signal;
 
 typedef enum e_tok_type
 {
-	TOK_WORD,    //ls cat hello ..
-	TOK_PIPE,     // |
-	TOK_REDIR_IN,  // <
-	TOK_REDIR_OUT,  // >
-	TOK_APPEND,     // >>
-	TOK_HEREDOC,	// <<
+	TOK_WORD,
+	TOK_PIPE,
+	TOK_REDIR_IN,
+	TOK_REDIR_OUT,
+	TOK_APPEND,
+	TOK_HEREDOC,
 }	t_tok_type;
 
 typedef struct s_token
@@ -138,6 +138,11 @@ void	add_token(t_token **head, t_token *new_node);
 /* ========================================================================== */
 
 int		parse(t_token *tokens, t_shell *shell);
+t_cmd	*cmd_new(void);
+void	add_cmd(t_cmd **head, t_cmd *new_cmd);
+int		count_args(t_token *tok);
+char	**make_argv(t_token *tok, int count);
+int		add_redir(t_cmd *cmd, t_redir_type type, char *target, int quoted);
 
 /* ========================================================================== */
 /*  PIPELINE — HEREDOC                                                        */
