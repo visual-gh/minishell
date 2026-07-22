@@ -6,7 +6,7 @@
 #    By: Visual <github.com/visual-gh>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/06 19:05:23 by Visual            #+#    #+#              #
-#    Updated: 2026/07/22 00:49:23 by Visual           ###   ########.fr        #
+#    Updated: 2026/07/22 17:37:16 by Visual           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,6 +73,8 @@ $(LIBFT):
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBS) -o $(NAME)
 
+$(OBJS): includes/minishell.h
+
 %.o: %.c
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
@@ -86,4 +88,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re $(LIBFT)

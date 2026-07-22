@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/20 17:12:32 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/20 20:01:10 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/22 18:02:09 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ static char	*expand_heredoc_line(char *line, t_shell *shell)
 	return (res);
 }
 
-static void	write_heredoc_line(int fd, char *line, t_redir *redir, t_shell *shell)
+static void	write_heredoc_line(int fd, char *line, t_redir *redir,
+		t_shell *shell)
 {
 	char	*exp;
 
@@ -56,7 +57,7 @@ static int	read_heredoc_body(t_redir *redir, t_shell *shell)
 	if (pipe(pipefd) < 0)
 		return (-1);
 	line = readline("> ");
-	while (line && !g_signal && strcmp(line, redir->target) != 0)
+	while (line && !g_signal && ft_strncmp(line, redir->target, SIZE_MAX) != 0)
 	{
 		write_heredoc_line(pipefd[1], line, redir, shell);
 		free(line);
