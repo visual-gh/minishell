@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 17:12:54 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/21 20:38:59 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/23 01:57:18 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,35 +40,40 @@ static int	parse_redir(t_cmd *cmd, t_token **tok)
 	return (0);
 }
 
-static int	parse_words(t_cmd *cmd, t_token **tok)
+static int	fill_words(t_cmd *cmd, t_token **tok)
 {
-	int	count;
+	int	i;
 
-	count = count_args(*tok);
-	cmd->argv = make_argv(*tok, count);
-	if (cmd->argv == NULL)
-		return (-1);
-	while (count-- > 0)
+	i = 0;
+	while (*tok != NULL && (*tok)->type != TOK_PIPE)
 	{
-		while ((*tok)->join && (*tok)->next)
-			*tok = (*tok)->next;
-		*tok = (*tok)->next;
+		if ((*tok)->type == TOK_WORD)
+		{
+			cmd->argv[i] = merge_word(tok);
+			if (cmd->argv[i] == NULL)
+				return (-1);
+			i++;
+		}
+		else if (parse_redir(cmd, tok) == -1)
+			return (-1);
 	}
 	return (0);
 }
 
 static int	parse_cmd(t_cmd *cmd, t_token **tok)
 {
-	while (*tok != NULL && (*tok)->type != TOK_PIPE)
+	int	count;
+
+	count = count_all_words(*tok);
+	if (count > 0)
 	{
-		if ((*tok)->type == TOK_WORD)
-		{
-			if (parse_words(cmd, tok) == -1)
-				return (-1);
-		}
-		else if (parse_redir(cmd, tok) == -1)
+		cmd->argv = malloc(sizeof(char *) * (count + 1));
+		if (cmd->argv == NULL)
 			return (-1);
+		cmd->argv[count] = NULL;
 	}
+	if (fill_words(cmd, tok) == -1)
+		return (-1);
 	if (cmd->argv == NULL && cmd->redirs == NULL)
 	{
 		print_error(NULL, NULL, "syntax error near unexpected token `|'");

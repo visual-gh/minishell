@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/22 17:26:56 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/22 20:28:44 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,8 +141,8 @@ void	free_tokens(t_token *head);
 int		parse(t_token *tokens, t_shell *shell);
 t_cmd	*cmd_new(void);
 void	add_cmd(t_cmd **head, t_cmd *new_cmd);
-int		count_args(t_token *tok);
-char	**make_argv(t_token *tok, int count);
+char	*merge_word(t_token **tok);
+int		count_all_words(t_token *tok);
 int		add_redir(t_cmd *cmd, t_redir_type type, char *target, int quoted);
 
 /* ========================================================================== */

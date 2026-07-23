@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 09:41:52 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/22 15:50:42 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/23 02:31:57 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,22 +40,31 @@ void	add_cmd(t_cmd **head, t_cmd *new_cmd)
 	current->next = new_cmd;
 }
 
-int	count_args(t_token *tok)
+int	count_all_words(t_token *tok)
 {
 	int	count;
 
 	count = 0;
-	while (tok && tok->type == TOK_WORD)
+	while (tok && tok->type != TOK_PIPE)
 	{
-		count++;
-		while (tok->join && tok->next)
+		if (tok->type == TOK_WORD)
+		{
+			count++;
+			while (tok->join && tok->next)
+				tok = tok->next;
 			tok = tok->next;
-		tok = tok->next;
+		}
+		else
+		{
+			tok = tok->next;
+			if (tok)
+				tok = tok->next;
+		}
 	}
 	return (count);
 }
 
-static char	*merge_word(t_token **tok)
+char	*merge_word(t_token **tok)
 {
 	t_token	*cur;
 	char	*res;
@@ -72,27 +81,4 @@ static char	*merge_word(t_token **tok)
 	}
 	*tok = cur->next;
 	return (res);
-}
-
-char	**make_argv(t_token *tok, int count)
-{
-	char	**argv;
-	int		i;
-
-	argv = malloc(sizeof(char *) * (count + 1));
-	if (argv == NULL)
-		return (NULL);
-	i = 0;
-	while (i < count)
-	{
-		argv[i] = merge_word(&tok);
-		if (argv[i] == NULL)
-		{
-			free_str_array(argv);
-			return (NULL);
-		}
-		i++;
-	}
-	argv[i] = NULL;
-	return (argv);
 }
