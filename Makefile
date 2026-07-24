@@ -6,7 +6,7 @@
 #    By: Visual <github.com/visual-gh>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/06 19:05:23 by Visual            #+#    #+#              #
-#    Updated: 2026/07/23 17:41:08 by Visual           ###   ########.fr        #
+#    Updated: 2026/07/25 01:52:43 by Visual           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,6 @@ SRCS	= src/main.c \
 		  src/lexer/lexer_utils.c \
 		  src/lexer/lexer_scan.c \
 		  src/lexer/token_init.c \
-		  src/lexer/errors.c \
 		  src/parser/parser.c \
 		  src/parser/parser_utils.c \
 		  src/parser/cmd_init.c \
