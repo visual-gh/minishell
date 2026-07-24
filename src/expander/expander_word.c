@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 14:21:01 by Visual            #+#    #+#             */
-/*   Updated: 2026/06/15 17:32:52 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 00:23:47 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,17 @@ static char	*expand_single_quoted(char *word, int *i)
 	return (res);
 }
 
+static char	*scan_literal(char *word, int *i, char stop1, char stop2)
+{
+	int	start;
+
+	start = *i;
+	while (word[*i] && word[*i] != '$' && word[*i] != stop1
+		&& word[*i] != stop2)
+		(*i)++;
+	return (ft_substr(word, start, *i - start));
+}
+
 static char	*expand_double_quoted(char *word, int *i, t_shell *shell)
 {
 	char	*res;
@@ -53,7 +64,7 @@ static char	*expand_double_quoted(char *word, int *i, t_shell *shell)
 		if (word[*i] == '$')
 			tmp = expand_var(word, i, shell);
 		else
-			tmp = ft_substr(word, (*i)++, 1);
+			tmp = scan_literal(word, i, '"', '"');
 		res = strjoin_free(res, tmp);
 		free(tmp);
 	}
@@ -79,7 +90,7 @@ char	*expand_word(char *word, t_shell *shell)
 		else if (word[i] == '$')
 			tmp = expand_var(word, &i, shell);
 		else
-			tmp = ft_substr(word, i++, 1);
+			tmp = scan_literal(word, &i, '\'', '"');
 		res = strjoin_free(res, tmp);
 		free(tmp);
 	}

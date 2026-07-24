@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 09:41:52 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/22 16:25:27 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 05:49:21 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,56 @@ int	add_redir(t_cmd *cmd, t_redir_type type, char *target, int quoted)
 		current->next = redir;
 	}
 	return (0);
+}
+
+static int	has_quote(char *raw)
+{
+	int	i;
+
+	i = 0;
+	while (raw[i])
+	{
+		if (raw[i] == '\'' || raw[i] == '"')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+static void	strip_char(char c, char *res, int *j, char *quote)
+{
+	if (*quote)
+	{
+		if (c == *quote)
+			*quote = 0;
+		else
+			res[(*j)++] = c;
+	}
+	else if (c == '\'' || c == '"')
+		*quote = c;
+	else
+		res[(*j)++] = c;
+}
+
+char	*strip_quotes(char *raw, int *quoted)
+{
+	char	*res;
+	int		i;
+	int		j;
+	char	quote;
+
+	res = malloc(sizeof(char) * (ft_strlen(raw) + 1));
+	if (res == NULL)
+		return (NULL);
+	*quoted = has_quote(raw);
+	i = 0;
+	j = 0;
+	quote = 0;
+	while (raw[i])
+	{
+		strip_char(raw[i], res, &j, &quote);
+		i++;
+	}
+	res[j] = '\0';
+	return (res);
 }

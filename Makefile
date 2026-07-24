@@ -6,7 +6,7 @@
 #    By: Visual <github.com/visual-gh>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/06 19:05:23 by Visual            #+#    #+#              #
-#    Updated: 2026/07/22 17:37:16 by Visual           ###   ########.fr        #
+#    Updated: 2026/07/23 17:41:08 by Visual           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,6 +31,7 @@ SRCS	= src/main.c \
 		  src/signals/signals.c \
 		  src/signals/signals_heredoc.c \
 		  src/heredoc/heredoc.c \
+		  src/heredoc/heredoc_expand.c \
 		  src/lexer/lexer.c \
 		  src/lexer/lexer_utils.c \
 		  src/lexer/lexer_scan.c \

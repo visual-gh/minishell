@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 09:41:52 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/23 02:31:57 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 05:52:43 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,6 @@ int	count_all_words(t_token *tok)
 		if (tok->type == TOK_WORD)
 		{
 			count++;
-			while (tok->join && tok->next)
-				tok = tok->next;
 			tok = tok->next;
 		}
 		else
@@ -62,23 +60,4 @@ int	count_all_words(t_token *tok)
 		}
 	}
 	return (count);
-}
-
-char	*merge_word(t_token **tok)
-{
-	t_token	*cur;
-	char	*res;
-	char	*tmp;
-
-	cur = *tok;
-	res = ft_strdup(cur->value);
-	while (res && cur->join && cur->next)
-	{
-		cur = cur->next;
-		tmp = ft_strjoin(res, cur->value);
-		free(res);
-		res = tmp;
-	}
-	*tok = cur->next;
-	return (res);
 }

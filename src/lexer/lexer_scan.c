@@ -6,17 +6,17 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 11:45:23 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/22 15:40:16 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 17:08:41 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	add_word_token(t_token **head, char *value, int quoted_type)
+static int	add_word_token(t_token **head, char *value)
 {
 	t_token	*tok;
 
-	tok = token_init(TOK_WORD, value, quoted_type);
+	tok = token_init(TOK_WORD, value);
 	free(value);
 	if (tok == NULL)
 		return (-1);
@@ -24,47 +24,33 @@ static int	add_word_token(t_token **head, char *value, int quoted_type)
 	return (0);
 }
 
-static int	scan_quote(char *input, int i, char quote_char)
+static int	is_word_char(char *input, int i, char quote)
 {
-	while (input[i] && input[i] != quote_char)
-		i++;
-	return (i);
+	if (quote)
+		return (1);
+	if (input[i] == ' ' || input[i] == '\t')
+		return (0);
+	return (is_separator(input, i) == TOK_WORD);
 }
 
-int	if_quotes(t_token **head, int *i, char *input)
+static int	scan_word(char *input, int i, int *err)
 {
-	char	quote_char;
-	int		quoted_type;
-	int		start;
-	int		end;
-	char	*value;
+	char	quote;
 
-	quote_char = input[*i];
-	if (quote_char == '\'')
-		quoted_type = 1;
-	else
-		quoted_type = 2;
-	(*i)++;
-	start = *i;
-	end = scan_quote(input, start, quote_char);
-	if (input[end] != quote_char)
+	quote = 0;
+	while (input[i] && is_word_char(input, i, quote))
 	{
-		print_error(NULL, NULL, "unclosed quote");
-		return (-1);
-	}
-	value = ft_substr(input, start, end - start);
-	if (value == NULL || add_word_token(head, value, quoted_type) == -1)
-		return (-1);
-	*i = end + 1;
-	return (0);
-}
-
-static int	scan_word(char *input, int i)
-{
-	while (input[i] && input[i] != ' ' && input[i] != '\t'
-		&& input[i] != '\'' && input[i] != '"'
-		&& is_separator(input, i) == TOK_WORD)
+		if (quote)
+		{
+			if (input[i] == quote)
+				quote = 0;
+		}
+		else if (input[i] == '\'' || input[i] == '"')
+			quote = input[i];
 		i++;
+	}
+	if (quote)
+		*err = 1;
 	return (i);
 }
 
@@ -72,12 +58,19 @@ int	if_word(t_token **head, int *i, char *input)
 {
 	int		start;
 	int		end;
+	int		err;
 	char	*value;
 
 	start = *i;
-	end = scan_word(input, start);
+	err = 0;
+	end = scan_word(input, start, &err);
+	if (err)
+	{
+		print_error(NULL, NULL, "unclosed quote");
+		return (-1);
+	}
 	value = ft_substr(input, start, end - start);
-	if (value == NULL || add_word_token(head, value, 0) == -1)
+	if (value == NULL || add_word_token(head, value) == -1)
 		return (-1);
 	*i = end;
 	return (0);

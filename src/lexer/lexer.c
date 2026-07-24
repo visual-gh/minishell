@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 20:20:38 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/22 16:17:58 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 16:30:12 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,33 +38,8 @@ static int	handle_token(t_token **head, int *i, char *input)
 	else if (tok == TOK_HEREDOC || tok == TOK_APPEND
 		|| tok == TOK_REDIR_IN || tok == TOK_REDIR_OUT)
 		return (if_redir(head, i, tok));
-	else if (input[*i] == '\'' || input[*i] == '"')
-		return (if_quotes(head, i, input));
 	else
 		return (if_word(head, i, input));
-}
-
-static void	set_join(t_token *head, char *input, int i)
-{
-	t_token	*last;
-
-	last = head;
-	while (last->next != NULL)
-		last = last->next;
-	if (input[i] != '\0' && input[i] != ' ' && input[i] != '\t'
-		&& input[i] != '|' && input[i] != '<' && input[i] != '>')
-		last->join = 1;
-	else
-		last->join = 0;
-}
-
-static int	lexer_step(t_token **head, char *input, int *i)
-{
-	if (handle_token(head, i, input) == -1)
-		return (-1);
-	if (*head != NULL)
-		set_join(*head, input, *i);
-	return (0);
 }
 
 t_token	*lexer(char *input)
@@ -80,7 +55,7 @@ t_token	*lexer(char *input)
 			i++;
 		if (input[i] == '\0')
 			break ;
-		if (lexer_step(&head, input, &i) == -1)
+		if (handle_token(&head, &i, input) == -1)
 		{
 			free_tokens(head);
 			return (NULL);

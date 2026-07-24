@@ -6,34 +6,11 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/20 17:12:32 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/22 18:02:09 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 00:31:32 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static char	*expand_heredoc_line(char *line, t_shell *shell)
-{
-	char	*res;
-	char	*tmp;
-	char	*next;
-	int		i;
-
-	res = ft_strdup("");
-	i = 0;
-	while (line[i])
-	{
-		if (line[i] == '$')
-			tmp = expand_var(line, &i, shell);
-		else
-			tmp = ft_substr(line, i++, 1);
-		next = ft_strjoin(res, tmp);
-		free(res);
-		free(tmp);
-		res = next;
-	}
-	return (res);
-}
 
 static void	write_heredoc_line(int fd, char *line, t_redir *redir,
 		t_shell *shell)

@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/22 20:28:44 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 17:09:13 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,6 @@ typedef struct s_token
 {
 	t_tok_type		type;
 	char			*value;
-	int				quoted;
-	int				join;
 	struct s_token	*next;
 }	t_token;
 
@@ -124,11 +122,10 @@ void	env_unset(char ***envp, const char *key);
 /*  PIPELINE — LEXER                                                          */
 /* ========================================================================== */
 
-t_token	*token_init(t_tok_type type, char *value, int quoted);
+t_token	*token_init(t_tok_type type, char *value);
 void	add_token(t_token **head, t_token *new_node);
 int		if_pipe(t_token **head, int *i);
 int		if_redir(t_token **head, int *i, int sep);
-int		if_quotes(t_token **head, int *i, char *input);
 int		if_word(t_token **head, int *i, char *input);
 int		is_separator(char *str, int i);
 t_token	*lexer(char *input);
@@ -141,15 +138,16 @@ void	free_tokens(t_token *head);
 int		parse(t_token *tokens, t_shell *shell);
 t_cmd	*cmd_new(void);
 void	add_cmd(t_cmd **head, t_cmd *new_cmd);
-char	*merge_word(t_token **tok);
 int		count_all_words(t_token *tok);
 int		add_redir(t_cmd *cmd, t_redir_type type, char *target, int quoted);
+char	*strip_quotes(char *raw, int *quoted);
 
 /* ========================================================================== */
 /*  PIPELINE — HEREDOC                                                        */
 /* ========================================================================== */
 
 int		read_heredocs(t_shell *shell);
+char	*expand_heredoc_line(char *line, t_shell *shell);
 
 /* ========================================================================== */
 /*  PIPELINE — EXPANDER                                                       */

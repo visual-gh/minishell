@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 17:12:54 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/23 01:57:18 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 05:07:47 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ static t_redir_type	redir_type_from_tok(t_tok_type type)
 static int	parse_redir(t_cmd *cmd, t_token **tok)
 {
 	t_redir_type	type;
+	char			*target;
+	int				quoted;
 
 	type = redir_type_from_tok((*tok)->type);
 	*tok = (*tok)->next;
@@ -34,8 +36,10 @@ static int	parse_redir(t_cmd *cmd, t_token **tok)
 		print_error(NULL, NULL, "syntax error near unexpected token `newline'");
 		return (-1);
 	}
-	if (add_redir(cmd, type, (*tok)->value, (*tok)->quoted) == -1)
-		return (-1);
+	target = strip_quotes((*tok)->value, &quoted);
+	if (target == NULL || add_redir(cmd, type, target, quoted) == -1)
+		return (free(target), -1);
+	free(target);
 	*tok = (*tok)->next;
 	return (0);
 }
@@ -49,10 +53,11 @@ static int	fill_words(t_cmd *cmd, t_token **tok)
 	{
 		if ((*tok)->type == TOK_WORD)
 		{
-			cmd->argv[i] = merge_word(tok);
+			cmd->argv[i] = ft_strdup((*tok)->value);
 			if (cmd->argv[i] == NULL)
 				return (-1);
 			i++;
+			*tok = (*tok)->next;
 		}
 		else if (parse_redir(cmd, tok) == -1)
 			return (-1);

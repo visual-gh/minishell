@@ -6,13 +6,13 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 16:22:18 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/22 16:14:58 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 16:07:04 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_token	*token_init(t_tok_type type, char *value, int quoted)
+t_token	*token_init(t_tok_type type, char *value)
 {
 	t_token	*token;
 
@@ -31,8 +31,6 @@ t_token	*token_init(t_tok_type type, char *value, int quoted)
 	}
 	else
 		token->value = NULL;
-	token->quoted = quoted;
-	token->join = 0;
 	token->next = NULL;
 	return (token);
 }
