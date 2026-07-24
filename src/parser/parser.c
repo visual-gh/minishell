@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 17:12:54 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/24 05:07:47 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 00:37:07 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,16 +91,18 @@ int	parse(t_token *tokens, t_shell *shell)
 {
 	t_token	*tok;
 	t_cmd	*cmd;
+	t_cmd	*tail;
 
 	if (tokens == NULL)
 		return (0);
 	tok = tokens;
+	tail = NULL;
 	while (1)
 	{
 		cmd = cmd_new();
 		if (cmd == NULL)
 			return (-1);
-		add_cmd(&shell->cmds, cmd);
+		add_cmd(&shell->cmds, &tail, cmd);
 		if (parse_cmd(cmd, &tok) == -1)
 			return (-1);
 		if (tok == NULL)

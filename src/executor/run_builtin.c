@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 15:42:51 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/19 15:46:27 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 23:32:05 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,7 @@ int	run_builtin(t_cmd *cmd, t_shell *shell)
 		return (ft_export(cmd, shell));
 	if (!ft_strncmp(name, "pwd", SIZE_MAX))
 		return (ft_pwd());
-	return (ft_unset(cmd, shell));
+	if (!ft_strncmp(name, "unset", SIZE_MAX))
+		return (ft_unset(cmd, shell));
+	return (1);
 }

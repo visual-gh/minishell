@@ -6,13 +6,13 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 11:45:23 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/24 17:08:41 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 00:05:57 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	add_word_token(t_token **head, char *value)
+static int	add_word_token(t_token **head, t_token **tail, char *value)
 {
 	t_token	*tok;
 
@@ -20,7 +20,7 @@ static int	add_word_token(t_token **head, char *value)
 	free(value);
 	if (tok == NULL)
 		return (-1);
-	add_token(head, tok);
+	add_token(head, tail, tok);
 	return (0);
 }
 
@@ -54,7 +54,7 @@ static int	scan_word(char *input, int i, int *err)
 	return (i);
 }
 
-int	if_word(t_token **head, int *i, char *input)
+int	if_word(t_token **head, t_token **tail, int *i, char *input)
 {
 	int		start;
 	int		end;
@@ -70,7 +70,7 @@ int	if_word(t_token **head, int *i, char *input)
 		return (-1);
 	}
 	value = ft_substr(input, start, end - start);
-	if (value == NULL || add_word_token(head, value) == -1)
+	if (value == NULL || add_word_token(head, tail, value) == -1)
 		return (-1);
 	*i = end;
 	return (0);

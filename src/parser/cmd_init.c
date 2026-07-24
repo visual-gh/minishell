@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 09:41:52 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/24 05:52:43 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 00:36:48 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,13 @@ t_cmd	*cmd_new(void)
 	return (cmd);
 }
 
-void	add_cmd(t_cmd **head, t_cmd *new_cmd)
+void	add_cmd(t_cmd **head, t_cmd **tail, t_cmd *new_cmd)
 {
-	t_cmd	*current;
-
 	if (*head == NULL)
-	{
 		*head = new_cmd;
-		return ;
-	}
-	current = *head;
-	while (current->next != NULL)
-		current = current->next;
-	current->next = new_cmd;
+	else
+		(*tail)->next = new_cmd;
+	*tail = new_cmd;
 }
 
 int	count_all_words(t_token *tok)

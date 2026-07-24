@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/24 20:17:09 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 01:08:45 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,10 +124,10 @@ void	env_unset(char ***envp, const char *key);
 /* ========================================================================== */
 
 t_token	*token_init(t_tok_type type, char *value);
-void	add_token(t_token **head, t_token *new_node);
-int		if_pipe(t_token **head, int *i);
-int		if_redir(t_token **head, int *i, int sep);
-int		if_word(t_token **head, int *i, char *input);
+void	add_token(t_token **head, t_token **tail, t_token *new_node);
+int		if_pipe(t_token **head, t_token **tail, int *i);
+int		if_redir(t_token **head, t_token **tail, int *i, int sep);
+int		if_word(t_token **head, t_token **tail, int *i, char *input);
 int		is_separator(char *str, int i);
 t_token	*lexer(char *input);
 void	free_tokens(t_token *head);
@@ -138,7 +138,7 @@ void	free_tokens(t_token *head);
 
 int		parse(t_token *tokens, t_shell *shell);
 t_cmd	*cmd_new(void);
-void	add_cmd(t_cmd **head, t_cmd *new_cmd);
+void	add_cmd(t_cmd **head, t_cmd **tail, t_cmd *new_cmd);
 int		count_all_words(t_token *tok);
 int		add_redir(t_cmd *cmd, t_redir_type type, char *target, int quoted);
 char	*strip_quotes(char *raw, int *quoted);
