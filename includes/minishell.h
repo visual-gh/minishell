@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/24 17:09:13 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 20:17:09 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ void	signals_wait(void);
 /* ========================================================================== */
 
 char	**env_init(char **envp);
+int		env_index(char **envp, const char *key);
 char	*env_get(char **envp, const char *key);
 int		env_set(char ***envp, const char *key, const char *val);
 void	env_unset(char ***envp, const char *key);
@@ -162,7 +163,6 @@ char	*expand_var(char *str, int *i, t_shell *shell);
 /* ========================================================================== */
 
 int		execute(t_shell *shell);
-int		apply_redirs(t_redir *redirs);
 int		apply_redirs_ret(t_redir *redirs);
 char	*resolve_path(char *cmd, char **envp);
 int		is_builtin(char *name);

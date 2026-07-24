@@ -6,13 +6,13 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 16:28:44 by Visual            #+#    #+#             */
-/*   Updated: 2026/05/07 17:38:26 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 20:18:22 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*env_get(char **envp, const char *key)
+int	env_index(char **envp, const char *key)
 {
 	size_t	klen;
 	int		i;
@@ -22,8 +22,18 @@ char	*env_get(char **envp, const char *key)
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], key, klen) == 0 && envp[i][klen] == '=')
-			return (envp[i] + klen + 1);
+			return (i);
 		i++;
 	}
-	return (NULL);
+	return (-1);
+}
+
+char	*env_get(char **envp, const char *key)
+{
+	int	i;
+
+	i = env_index(envp, key);
+	if (i < 0)
+		return (NULL);
+	return (envp[i] + ft_strlen(key) + 1);
 }

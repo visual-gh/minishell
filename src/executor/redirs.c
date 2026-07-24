@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 16:29:41 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/19 17:20:03 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 18:50:23 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,12 +63,5 @@ int	apply_redirs_ret(t_redir *redirs)
 			return (-1);
 		redirs = redirs->next;
 	}
-	return (0);
-}
-
-int	apply_redirs(t_redir *redirs)
-{
-	if (apply_redirs_ret(redirs) < 0)
-		exit(1);
 	return (0);
 }

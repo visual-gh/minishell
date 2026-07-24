@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 18:52:16 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/22 19:30:50 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/24 20:16:54 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 	char	*path;
 
 	signals_child();
-	apply_redirs(cmd->redirs);
+	if (apply_redirs_ret(cmd->redirs) < 0)
+		exit(1);
 	if (!cmd->argv || !cmd->argv[0])
 		exit(0);
 	if (is_builtin(cmd->argv[0]))
