@@ -6,7 +6,7 @@
 #    By: Visual <github.com/visual-gh>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/06 19:05:23 by Visual            #+#    #+#              #
-#    Updated: 2026/07/25 01:52:43 by Visual           ###   ########.fr        #
+#    Updated: 2026/07/25 01:58:06 by Visual           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,9 +52,7 @@ SRCS	= src/main.c \
 		  src/builtins/unset.c \
 		  src/builtins/env.c \
 		  src/builtins/exit.c \
-		  src/executor/execute.c \
-		  src/executor/exit_status.c \
-		  src/executor/is_builtin.c \
+		  src/executor/executor.c \
 		  src/executor/pipeline.c \
 		  src/executor/pipeline_utils.c \
 		  src/executor/redirs.c \
