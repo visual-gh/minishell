@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 18:56:11 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/22 16:41:33 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 02:29:15 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,12 @@ static int	is_blank(char *line)
 	while (*line == ' ' || *line == '\t')
 		line++;
 	return (*line == '\0');
+}
+
+static int	ready_to_execute(t_shell *shell)
+{
+	return (shell->cmds && read_heredocs(shell) == 0
+		&& expand_cmds(shell) == 0);
 }
 
 static void	process_line(char *line, t_shell *shell)
@@ -33,7 +39,7 @@ static void	process_line(char *line, t_shell *shell)
 	}
 	if (parse(tokens, shell) == -1)
 		shell->last_status = 2;
-	else if (shell->cmds && read_heredocs(shell) && expand_cmds(shell))
+	else if (ready_to_execute(shell))
 		shell->last_status = execute(shell);
 	free_tokens(tokens);
 	free_cmd_list(shell->cmds);

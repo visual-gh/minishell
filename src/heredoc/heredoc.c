@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/20 17:12:32 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/24 00:31:32 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 02:24:04 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,5 +87,5 @@ int	read_heredocs(t_shell *shell)
 		g_signal = 0;
 		ret = -1;
 	}
-	return (ret == 0);
+	return (ret);
 }

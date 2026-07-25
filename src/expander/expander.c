@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 14:43:43 by Visual            #+#    #+#             */
-/*   Updated: 2026/06/12 03:44:28 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 02:25:53 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ int	expand_cmds(t_shell *shell)
 	while (cmd)
 	{
 		if (!expand_cmd(cmd, shell))
-			return (0);
+			return (-1);
 		cmd = cmd->next;
 	}
-	return (1);
+	return (0);
 }
