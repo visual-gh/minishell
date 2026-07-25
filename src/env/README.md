@@ -2,7 +2,11 @@
 
 The environment is what gives your shell access to variables like `PATH`, `HOME`, or `USER`.
 When minishell starts, it receives those variables from the OS as a `char **`, a plain array of strings.
-This layer owns a private heap copy of that array and exposes four functions to read and mutate it.
+This layer owns a private heap copy of that array and exposes a small set of functions to read and mutate it.
+
+It's the shell's long-lived state: created once at startup, read by the
+[expander](../expander/README.md) (`$USER`) and the [executor](../executor/README.md)
+(`$PATH` lookup), and written by the [`export`, `unset`, and `cd` builtins](../builtins/README.md).
 
 ---
 
@@ -39,6 +43,28 @@ You call them with `&shell->envp`.
 ---
 
 ## Functions
+
+### `env_index`: the one place that matches a key
+
+Every operation below needs the same thing: *"which slot holds `KEY`?"* Rather
+than write that scan three times, one helper owns it:
+
+```c
+int env_index(char **envp, const char *key);   // returns the index, or -1
+```
+
+It matches `"KEY=..."` by comparing the key and checking the character right after
+it is `=` (so `PATH` doesn't match `PATHEXT`):
+
+```c
+if (ft_strncmp(envp[i], key, klen) == 0 && envp[i][klen] == '=')
+    return (i);
+```
+
+`env_get`, `env_set`, and `env_unset` all call it. One place to be correct about
+matching means they can never disagree.
+
+---
 
 ### `env_init`: take ownership of the system environment
 

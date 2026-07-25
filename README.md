@@ -1,64 +1,163 @@
-# Minishell To Do
+*This project has been created as part of the 42 curriculum by Visual, Daniela.*
 
-Status: phase 0 in progress. Project compiles, exits 0, rejects bad argc.
+# minishell
 
-## Phase 0: Skeleton
+**Summary:** A minimal shell that reproduces a subset of `bash`: command execution, pipes, redirections, quoting, environment-variable expansion, signals, and seven built-ins.
 
-- [x] `src/main.c`: argc check, init, loop, free, return last_status
-- [x] `src/shell_init.c`: allocate `t_shell`, dup envp, install signals
-- [x] `src/shell_loop.c`: readline + add_history loop, Ctrl-D exits
-- [x] `src/env/env_init.c`: deep copy envp
-- [x] `src/env/env_get.c`: lookup by key
-- [x] `src/env/env_set.c`: insert or update key=val
-- [x] `src/env/env_unset.c`: remove key, compact array
-- [x] `src/signals/signals.c`: `signals_prompt` (SIGINT redraws, SIGQUIT ignored), stubs for child / wait / heredoc
-- [x] `src/utils/error.c`: `print_error`
-- [x] `src/utils/free.c`: `free_cmd_list`, `free_redirs`, `free_str_array`
-- [x] `Makefile`: -Wall -Wextra -Werror, -lreadline, libft auto-build, no relink
-- [x] Smoke test: prompt works, Ctrl-C redraws, Ctrl-D exits, valgrind clean
+<br>
 
-## Phase 1: Lexer
+## Table of Contents
 
-- [ ] `src/lexer/lexer.c`: tokenize loop, returns `t_token *`
-- [ ] `src/lexer/lexer_quotes.c`: quote handling, sets `quoted` flag
-- [ ] `src/lexer/lexer_utils.c`: operator detection (`|`, `<`, `>`, `<<`, `>>`), append, free
-- [ ] Test by printing token list for sample inputs
+- [Description](#description)
+- [Instructions](#instructions)
+- [How It Works](#how-it-works)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Documentation](#documentation)
+- [Testing](#testing)
+- [Resources](#resources)
+- [AI Usage](#ai-usage)
 
-## Phase 2: Parser
+<br>
 
-- [ ] `src/parser/parser.c`: token list to `t_cmd` list
-- [ ] `src/parser/parser_redir.c`: attach redirs to current cmd
-- [ ] `src/parser/parser_syntax.c`: syntax errors (status 2)
+## Description
 
-## Phase 3: Heredoc
+minishell is a command-line interpreter written in C. It displays a prompt, reads a line, and runs it the way `bash` would: resolving executables through `PATH`, wiring commands together with pipes, applying redirections, expanding variables, and reporting the exit status of the last foreground command.
 
-- [ ] `src/heredoc/heredoc.c`: read bodies before fork, expand if delim unquoted, heredoc signal mode
+When in doubt about a behaviour, `bash` is the reference. Anything the subject does not require (backslash escaping, `;`, `&`, wildcards) is deliberately left uninterpreted.
 
-## Phase 4: Expander
+<br>
 
-- [ ] `src/expander/expander.c`: walk argv and redir targets
-- [ ] `src/expander/expander_var.c`: `$VAR`, `$?`, quote-aware, drop empty unquoted words
+## Instructions
 
-## Phase 5: Executor
+```bash
+make        # build libft, then minishell
+make clean  # remove object files
+make fclean # remove object files and the binary
+make re     # full rebuild
+```
 
-- [ ] `src/executor/exec.c`: single cmd vs pipeline dispatch, builtin in parent for single-builtin lines
-- [ ] `src/executor/exec_pipe.c`: pipeline fork, dup2, wait
-- [ ] `src/executor/exec_redir.c`: `apply_redirs`
-- [ ] `src/executor/exec_path.c`: `resolve_path` via PATH
+```bash
+./minishell
+minishell$ ls -la | grep .c | wc -l
+minishell$ echo "hello $USER" > out.txt
+minishell$ cat << EOF
+```
 
-## Phase 6: Builtins
+`readline` is required to build (`-lreadline`).
 
-- [ ] `echo` with `-n`
-- [ ] `pwd`
-- [ ] `env`
-- [ ] `cd` (update PWD and OLDPWD)
-- [ ] `export` (no args lists sorted, `=` sets, no `=` marks)
-- [ ] `unset`
-- [ ] `exit` (numeric arg, too many args)
+<br>
 
-## Phase 7: Polish
+## How It Works
 
-- [ ] Norminette clean on all `.c` and `.h`
-- [ ] Valgrind clean with `--leak-check=full --track-fds=yes` on every test case
-- [ ] Edge cases: empty line, whitespace only, unclosed quotes, `|` at start or end, `$?`, very long input
-- [ ] Defense walkthrough vs `Wiki/11_Defense.md`
+A line travels through five stages before anything runs. Each stage has one job and hands a cleaner structure to the next.
+
+```
+  input line
+      │
+   ┌──▼───────┐ splits the raw line into tokens (words, |, <, >, <<, >>),
+   │ LEXER    │ tracks quote state, flags unclosed quotes
+   └──┬───────┘
+   ┌──▼───────┐ groups tokens into a command list, attaches redirections,
+   │ PARSER   │ reports syntax errors (status 2)
+   └──┬───────┘
+   ┌──▼───────┐ resolves $VAR and $?, strips quotes, the single owner of
+   │ EXPANDER │ all quote handling in the project
+   └──┬───────┘
+   ┌──▼───────┐ reads heredoc bodies before execution, expanding unless the
+   │ HEREDOC  │ delimiter was quoted
+   └──┬───────┘
+   ┌──▼───────┐ forks the pipeline, applies redirections, runs built-ins in
+   │ EXECUTOR │ the parent when the line is a single built-in
+   └──┬───────┘
+      ▼
+  exit status → $?
+```
+
+Each module has its own `README.md` under `src/` explaining its internals in more detail.
+
+**Signals.** A single global (`volatile sig_atomic_t g_signal`) stores nothing but the number of a received signal, as the subject requires. The handler leaves a breadcrumb; the main loop reads it to set `$?` to 130 after `Ctrl-C`. At the prompt, `Ctrl-C` redraws a fresh line, `Ctrl-\` is ignored, and `Ctrl-D` exits.
+
+<br>
+
+## Features
+
+**Built-ins:** `echo` (with `-n`), `cd`, `pwd`, `export`, `unset`, `env`, `exit`.
+
+**Redirections:** `<`, `>`, `>>`, and `<<` (heredoc, no history).
+
+**Pipes:** arbitrary-length pipelines (`cmd1 | cmd2 | cmd3`).
+
+**Quoting:** single quotes suppress all interpretation; double quotes suppress everything except `$`.
+
+**Expansion:** `$VAR` from the environment and `$?` for the last exit status, quote-aware.
+
+**Path resolution:** absolute, relative, and `PATH` lookup (left to right).
+
+<br>
+
+## Project Structure
+
+```
+src/
+├── main.c         entry point: argc check, init, run loop, free
+├── shell_init.c   build the shell struct, copy the environment, install signals
+├── shell_loop.c   read-eval loop: readline, history, run each line
+├── lexer/         raw line → token list
+├── parser/        token list → command list + redirections
+├── expander/      $VAR / $? expansion and quote removal
+├── heredoc/       << body reading and expansion
+├── executor/      pipelines, redirections, path resolution, built-in dispatch
+├── builtins/      echo, cd, pwd, export, unset, env, exit
+├── env/           environment array: init, get, set, unset
+├── signals/       prompt / child / heredoc signal modes
+└── utils/         error printing, memory cleanup
+```
+
+<br>
+
+## Documentation
+
+Every module carries its own README explaining how it works, with code snippets
+and the tricky parts spelled out. Start with **[`src/`](src/README.md)**, which
+maps the whole pipeline and suggests a reading order for learning the project
+from scratch.
+
+- [`src/`](src/README.md): architecture overview and reading order
+- [`includes/`](includes/README.md): the four core structs and the data model
+- [`src/lexer/`](src/lexer/README.md) · [`src/parser/`](src/parser/README.md) · [`src/expander/`](src/expander/README.md) · [`src/heredoc/`](src/heredoc/README.md): turning text into commands
+- [`src/executor/`](src/executor/README.md): fork, pipes, redirections, dispatch
+- [`src/builtins/`](src/builtins/README.md) · [`src/env/`](src/env/README.md) · [`src/signals/`](src/signals/README.md) · [`src/utils/`](src/utils/README.md): built-ins and support layers
+
+<br>
+
+## Testing
+
+Behaviour is validated by diffing minishell against `bash` on the same input, plus `valgrind` for leaks and `norminette` for style.
+
+```bash
+norminette includes/ src/
+printf 'ls | grep .c | wc -l\nexit\n' | valgrind --leak-check=full ./minishell
+```
+
+The only tolerated leaks are those internal to `readline`, which the subject exempts. All code we wrote is leak-free.
+
+<br>
+
+## Resources
+
+- [42 Cursus Gitbook: minishell](https://web.archive.org/web/20250306211139/https://42-cursus.gitbook.io/guide/rank-03/minishell) (original site offline; linked via the Wayback Machine)
+- [Handling a File by its Descriptor in C (CodeQuoi)](https://www.codequoi.com/en/handling-a-file-by-its-descriptor-in-c/)
+- [Oceano: 42 project walkthroughs (YouTube)](https://youtu.be/yTR00r8vBH8)
+
+<br>
+
+## AI Usage
+
+AI was used as a support tool, not a code generator:
+
+- **Planning:** the architecture and the five-stage pipeline before writing code.
+- **Edge cases:** hunting quoting, heredoc, and signal corners against `bash` behaviour.
+- **Documentation:** this README and the per-module docs under `src/`.
+
+All code was written, understood, and is defensible by us.
