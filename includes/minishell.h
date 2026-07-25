@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/25 02:10:15 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 03:10:18 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <sys/stat.h>
 # include <signal.h>
 # include <errno.h>
+# include <string.h>
 # include <limits.h>
 # include <stdint.h>
 # include <readline/readline.h>

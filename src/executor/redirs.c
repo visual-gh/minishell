@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 16:29:41 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/25 02:07:13 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 03:01:04 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static int	open_in(char *target)
 
 	fd = open(target, O_RDONLY);
 	if (fd < 0)
-		return (perror(target), -1);
+		return (ft_putstr_fd("minishell: ", 2), perror(target), -1);
 	dup2(fd, STDIN_FILENO);
 	close(fd);
 	return (0);
@@ -30,7 +30,7 @@ static int	open_out(char *target, int flags)
 
 	fd = open(target, flags, 0644);
 	if (fd < 0)
-		return (perror(target), -1);
+		return (ft_putstr_fd("minishell: ", 2), perror(target), -1);
 	dup2(fd, STDOUT_FILENO);
 	close(fd);
 	return (0);
