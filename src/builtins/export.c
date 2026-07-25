@@ -6,13 +6,13 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/17 19:12:46 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/19 15:07:58 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 02:05:40 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	is_valid_identificator(char *str)
+static int	is_valid_identifier(char *str)
 {
 	int	i;
 
@@ -34,7 +34,7 @@ static int	export_one(char *arg, t_shell *shell)
 	char	*key;
 	int		ret;
 
-	if (!is_valid_identificator(arg))
+	if (!is_valid_identifier(arg))
 		return (print_error("export", arg, "not a valid identifier"), 1);
 	eq = ft_strchr(arg, '=');
 	if (eq == NULL)

@@ -6,13 +6,13 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 11:45:23 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/24 23:53:12 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 02:05:22 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	if_pipe(t_token **head, t_token **tail, int *i)
+int	lex_pipe(t_token **head, t_token **tail, int *i)
 {
 	t_token	*tok;
 
@@ -24,7 +24,7 @@ int	if_pipe(t_token **head, t_token **tail, int *i)
 	return (0);
 }
 
-int	if_redir(t_token **head, t_token **tail, int *i, int sep)
+int	lex_redir(t_token **head, t_token **tail, int *i, int sep)
 {
 	t_token	*tok;
 

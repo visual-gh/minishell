@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/14 11:45:23 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/25 00:05:57 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 02:04:47 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static int	is_word_char(char *input, int i, char quote)
 		return (1);
 	if (input[i] == ' ' || input[i] == '\t')
 		return (0);
-	return (is_separator(input, i) == TOK_WORD);
+	return (separator_type(input, i) == TOK_WORD);
 }
 
 static int	scan_word(char *input, int i, int *err)
@@ -54,7 +54,7 @@ static int	scan_word(char *input, int i, int *err)
 	return (i);
 }
 
-int	if_word(t_token **head, t_token **tail, int *i, char *input)
+int	lex_word(t_token **head, t_token **tail, int *i, char *input)
 {
 	int		start;
 	int		end;

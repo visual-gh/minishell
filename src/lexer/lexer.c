@@ -6,13 +6,13 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 20:20:38 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/25 00:16:14 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 02:04:07 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	is_separator(char *str, int i)
+int	separator_type(char *str, int i)
 {
 	if (str[i] == '|')
 		return (TOK_PIPE);
@@ -32,14 +32,14 @@ static int	handle_token(t_token **head, t_token **tail, int *i, char *input)
 {
 	int	tok;
 
-	tok = is_separator(input, *i);
+	tok = separator_type(input, *i);
 	if (tok == TOK_PIPE)
-		return (if_pipe(head, tail, i));
+		return (lex_pipe(head, tail, i));
 	else if (tok == TOK_HEREDOC || tok == TOK_APPEND
 		|| tok == TOK_REDIR_IN || tok == TOK_REDIR_OUT)
-		return (if_redir(head, tail, i, tok));
+		return (lex_redir(head, tail, i, tok));
 	else
-		return (if_word(head, tail, i, input));
+		return (lex_word(head, tail, i, input));
 }
 
 t_token	*lexer(char *input)

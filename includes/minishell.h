@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/25 01:08:45 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/25 02:10:15 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,10 +125,10 @@ void	env_unset(char ***envp, const char *key);
 
 t_token	*token_init(t_tok_type type, char *value);
 void	add_token(t_token **head, t_token **tail, t_token *new_node);
-int		if_pipe(t_token **head, t_token **tail, int *i);
-int		if_redir(t_token **head, t_token **tail, int *i, int sep);
-int		if_word(t_token **head, t_token **tail, int *i, char *input);
-int		is_separator(char *str, int i);
+int		lex_pipe(t_token **head, t_token **tail, int *i);
+int		lex_redir(t_token **head, t_token **tail, int *i, int sep);
+int		lex_word(t_token **head, t_token **tail, int *i, char *input);
+int		separator_type(char *str, int i);
 t_token	*lexer(char *input);
 void	free_tokens(t_token *head);
 
@@ -163,7 +163,7 @@ char	*expand_var(char *str, int *i, t_shell *shell);
 /* ========================================================================== */
 
 int		execute(t_shell *shell);
-int		apply_redirs_ret(t_redir *redirs);
+int		apply_redirs(t_redir *redirs);
 char	*resolve_path(char *cmd, char **envp);
 int		is_builtin(char *name);
 int		run_builtin(t_cmd *cmd, t_shell *shell);
