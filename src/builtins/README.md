@@ -108,10 +108,10 @@ letter or `_` and continues with letters, digits, or `_`:
 
 ```c
 if (!is_valid_identifier(arg))
-    return (print_error("export", arg, "not a valid identifier"), 1);
+    return (bad_identifier(arg));               // backquoted, like bash
 eq = ft_strchr(arg, '=');
 if (eq == NULL)                                 // export FOO  (no value)
-    ... mark it: set to "" only if it doesn't already exist ...
+    ... mark it: append a bare "FOO" if the name is not there yet ...
 else
     env_set(&shell->envp, key, eq + 1);         // export FOO=bar
 ```
@@ -119,6 +119,10 @@ else
 `export FOO=bar` sets it; `export FOO` marks the name without a value; `export
 1bad` is rejected with status 1. All the actual mutation goes through
 [`env_set`](../env/README.md).
+
+A marked name is stored as a bare `FOO` with no `=`, which is how one flat
+`char **` holds both "exported" and "has no value". `env_get` returns `NULL` for
+it, `env` skips it, and `print_entry` prints `declare -x FOO`.
 
 ---
 

@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/17 19:52:55 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/27 14:14:18 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 18:15:12 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,20 +29,25 @@ static int	is_numeric(char *str)
 
 static int	safe_atol(char *str, long *out)
 {
-	long	res;
-	int		sign;
+	unsigned long	res;
+	unsigned long	limit;
+	int				neg;
 
-	res = 0;
-	sign = 1;
+	neg = 0;
 	if (*str == '-' || *str == '+')
-		sign = 1 - (2 * (*str++ == '-'));
+		neg = (*str++ == '-');
+	limit = (unsigned long)LONG_MAX + neg;
+	res = 0;
 	while (*str)
 	{
-		if (res > (LONG_MAX - (*str - '0')) / 10)
+		if (res > (limit - (*str - '0')) / 10)
 			return (0);
 		res = res * 10 + (*str++ - '0');
 	}
-	*out = res * sign;
+	if (neg && res > 0)
+		*out = -(long)(res - 1) - 1;
+	else
+		*out = (long)res;
 	return (1);
 }
 

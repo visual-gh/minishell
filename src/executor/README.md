@@ -129,7 +129,8 @@ void run_child(t_shell *shell, t_cmd *cmd)
         print_error(cmd->argv[0], NULL, "command not found");
         exit(127);
     }
-    execve(path, cmd->argv, shell->envp);
+    envp = exported_envp(shell->envp);       // drops valueless export marks
+    execve(path, cmd->argv, envp);
     perror(path);                            // only reached if execve failed
     exit(126);
 }
@@ -223,12 +224,18 @@ int exit_code_from(int wstatus)
     if (WIFEXITED(wstatus))
         return (WEXITSTATUS(wstatus));       // normal exit → its code
     if (WIFSIGNALED(wstatus))
+    {
+        report_quit(wstatus);                // "Quit (core dumped)" on Ctrl-\
         return (128 + WTERMSIG(wstatus));    // killed by signal → 128+n
+    }
     return (1);
 }
 ```
 
-`128 + n` is why Ctrl-C'ing `cat` gives `$? == 130` (SIGINT is 2).
+`128 + n` is why Ctrl-C'ing `cat` gives `$? == 130` (SIGINT is 2), and Ctrl-\\
+gives 131 (SIGQUIT is 3). `report_quit` prints bash's message for that second
+case, with `(core dumped)` only when `WCOREDUMP` says a core was written. Every
+wait in the shell funnels through here, so both callers got it for free.
 
 ---
 

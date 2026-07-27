@@ -54,15 +54,21 @@ int env_index(char **envp, const char *key);   // returns the index, or -1
 ```
 
 It matches `"KEY=..."` by comparing the key and checking the character right after
-it is `=` (so `PATH` doesn't match `PATHEXT`):
+it is `=` or the end of the string (so `PATH` doesn't match `PATHEXT`, but a
+valueless `export PATH` is still found):
 
 ```c
-if (ft_strncmp(envp[i], key, klen) == 0 && envp[i][klen] == '=')
+if (ft_strncmp(envp[i], key, klen) == 0
+    && (envp[i][klen] == '=' || envp[i][klen] == '\0'))
     return (i);
 ```
 
 `env_get`, `env_set`, and `env_unset` all call it. One place to be correct about
 matching means they can never disagree.
+
+`env_get` then checks that same byte again: an entry with no `=` is exported but
+has no value, so it returns `NULL` and `$KEY` expands to empty. That is bash's
+behavior for `export FOO` with no assignment.
 
 ---
 

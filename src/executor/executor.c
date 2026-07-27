@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/20 15:41:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/25 01:58:01 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 17:56:21 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,25 @@ int	execute(t_shell *shell)
 	return (run_pipeline(shell));
 }
 
+static void	report_quit(int wstatus)
+{
+	if (WTERMSIG(wstatus) != SIGQUIT)
+		return ;
+	ft_putstr_fd("Quit", STDERR_FILENO);
+	if (WCOREDUMP(wstatus))
+		ft_putstr_fd(" (core dumped)", STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
+}
+
 int	exit_code_from(int wstatus)
 {
 	if (WIFEXITED(wstatus))
 		return (WEXITSTATUS(wstatus));
 	if (WIFSIGNALED(wstatus))
+	{
+		report_quit(wstatus);
 		return (128 + WTERMSIG(wstatus));
+	}
 	return (1);
 }
 

@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/17 19:46:08 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/17 19:46:45 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 18:05:35 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@ int	ft_env(t_shell *shell)
 
 	i = 0;
 	while (shell->envp[i])
-		ft_putendl_fd(shell->envp[i++], STDOUT_FILENO);
+	{
+		if (ft_strchr(shell->envp[i], '='))
+			ft_putendl_fd(shell->envp[i], STDOUT_FILENO);
+		i++;
+	}
 	return (0);
 }

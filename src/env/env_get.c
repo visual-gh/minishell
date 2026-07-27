@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 16:28:44 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/24 20:18:22 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 18:04:58 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ int	env_index(char **envp, const char *key)
 	i = 0;
 	while (envp[i])
 	{
-		if (ft_strncmp(envp[i], key, klen) == 0 && envp[i][klen] == '=')
+		if (ft_strncmp(envp[i], key, klen) == 0
+			&& (envp[i][klen] == '=' || envp[i][klen] == '\0'))
 			return (i);
 		i++;
 	}
@@ -30,10 +31,14 @@ int	env_index(char **envp, const char *key)
 
 char	*env_get(char **envp, const char *key)
 {
-	int	i;
+	size_t	klen;
+	int		i;
 
 	i = env_index(envp, key);
 	if (i < 0)
 		return (NULL);
-	return (envp[i] + ft_strlen(key) + 1);
+	klen = ft_strlen(key);
+	if (envp[i][klen] != '=')
+		return (NULL);
+	return (envp[i] + klen + 1);
 }

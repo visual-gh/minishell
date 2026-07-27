@@ -34,7 +34,11 @@ The three optional pieces compose into bash-style messages:
 |---|---|
 | `print_error(NULL, NULL, "unclosed quote")` | `minishell: unclosed quote` |
 | `print_error("cd", "/nope", strerror(errno))` | `minishell: cd: /nope: No such file or directory` |
-| `print_error("export", "1x", "not a valid identifier")` | `minishell: export: 1x: not a valid identifier` |
+| `print_error("exit", "abc", "numeric argument required")` | `minishell: exit: abc: numeric argument required` |
+
+`export` is the one builtin that does not use it. Bash backquotes the offending
+name in `not a valid identifier` and in no other message, so `bad_identifier` in
+[builtins/](../builtins/README.md) writes that one line directly.
 
 It returns `1` on purpose, so callers can write
 `return (print_error(...), 1);` in a single line, a small idiom you'll see all

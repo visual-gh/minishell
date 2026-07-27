@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/17 19:12:46 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/25 02:05:40 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 18:07:10 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,14 @@ static int	is_valid_identifier(char *str)
 	return (1);
 }
 
+static int	bad_identifier(char *arg)
+{
+	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
+	ft_putstr_fd(arg, STDERR_FILENO);
+	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+	return (1);
+}
+
 static int	export_one(char *arg, t_shell *shell)
 {
 	char	*eq;
@@ -35,12 +43,12 @@ static int	export_one(char *arg, t_shell *shell)
 	int		ret;
 
 	if (!is_valid_identifier(arg))
-		return (print_error("export", arg, "not a valid identifier"), 1);
+		return (bad_identifier(arg));
 	eq = ft_strchr(arg, '=');
 	if (eq == NULL)
 	{
-		if (env_get(shell->envp, arg) == NULL)
-			env_set(&shell->envp, arg, "");
+		if (env_index(shell->envp, arg) < 0)
+			env_set(&shell->envp, arg, NULL);
 		return (0);
 	}
 	key = ft_substr(arg, 0, eq - arg);

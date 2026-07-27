@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 01:55:15 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/24 19:49:28 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 17:59:11 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ static char	*make_entry(const char *key, const char *val)
 	size_t	klen;
 	size_t	vlen;
 
+	if (!val)
+		return (ft_strdup(key));
 	klen = ft_strlen(key);
 	vlen = ft_strlen(val);
 	entry = malloc(klen + vlen + 2);
