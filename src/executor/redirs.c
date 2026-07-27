@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 16:29:41 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/25 03:01:04 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 13:47:35 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ static int	open_heredoc(t_redir *redir)
 		return (-1);
 	dup2(redir->heredoc_fd, STDIN_FILENO);
 	close(redir->heredoc_fd);
+	redir->heredoc_fd = -1;
 	return (0);
 }
 

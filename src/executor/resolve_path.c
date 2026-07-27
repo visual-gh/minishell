@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 16:03:46 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/19 17:49:23 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 13:30:41 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,33 @@ static char	*resolve_slash(char *cmd)
 	return (NULL);
 }
 
+static char	*search_dirs(char **dirs, char *cmd)
+{
+	char	*full;
+	char	*denied;
+	int		i;
+
+	denied = NULL;
+	i = 0;
+	while (dirs[i])
+	{
+		full = path_join(dirs[i], cmd);
+		if (full && access(full, X_OK) == 0)
+			return (free(denied), full);
+		if (full && denied == NULL && access(full, F_OK) == 0)
+			denied = full;
+		else
+			free(full);
+		i++;
+	}
+	return (denied);
+}
+
 char	*resolve_path(char *cmd, char **envp)
 {
 	char	*path;
 	char	**dirs;
 	char	*full;
-	int		i;
 
 	if (ft_strchr(cmd, '/'))
 		return (resolve_slash(cmd));
@@ -47,14 +68,6 @@ char	*resolve_path(char *cmd, char **envp)
 	dirs = ft_split(path, ':');
 	if (!dirs)
 		return (NULL);
-	i = 0;
-	while (dirs[i])
-	{
-		full = path_join(dirs[i], cmd);
-		if (full && access(full, X_OK) == 0)
-			return (free_str_array(dirs), full);
-		free(full);
-		i++;
-	}
-	return (free_str_array(dirs), NULL);
+	full = search_dirs(dirs, cmd);
+	return (free_str_array(dirs), full);
 }

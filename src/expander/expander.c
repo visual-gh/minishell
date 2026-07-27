@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 14:43:43 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/25 02:25:53 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 13:47:48 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,14 @@ static int	expand_redir_list(t_redir *redir, t_shell *shell)
 
 	while (redir)
 	{
-		expanded = expand_word(redir->target, shell);
-		if (!expanded)
-			return (0);
-		free(redir->target);
-		redir->target = expanded;
+		if (redir->type != REDIR_HEREDOC)
+		{
+			expanded = expand_word(redir->target, shell);
+			if (!expanded)
+				return (0);
+			free(redir->target);
+			redir->target = expanded;
+		}
 		redir = redir->next;
 	}
 	return (1);

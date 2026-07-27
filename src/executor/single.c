@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 17:12:09 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/25 02:08:39 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 13:39:57 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ static int	fork_exec(t_shell *shell, t_cmd *cmd)
 	int		wstatus;
 
 	pid = fork();
+	if (pid < 0)
+		return (perror("minishell: fork"), 1);
 	if (pid == 0)
 		run_child(shell, cmd);
 	signals_wait();

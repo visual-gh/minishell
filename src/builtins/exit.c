@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/17 19:52:55 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/19 15:13:18 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 14:14:18 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,22 +27,39 @@ static int	is_numeric(char *str)
 	return (1);
 }
 
+static int	safe_atol(char *str, long *out)
+{
+	long	res;
+	int		sign;
+
+	res = 0;
+	sign = 1;
+	if (*str == '-' || *str == '+')
+		sign = 1 - (2 * (*str++ == '-'));
+	while (*str)
+	{
+		if (res > (LONG_MAX - (*str - '0')) / 10)
+			return (0);
+		res = res * 10 + (*str++ - '0');
+	}
+	*out = res * sign;
+	return (1);
+}
+
 int	ft_exit(t_cmd *cmd, t_shell *shell)
 {
-	int	status;
+	long	status;
 
-	if (!cmd->argv[1])
-		status = shell->last_status;
-	else if (!is_numeric(cmd->argv[1]))
+	status = shell->last_status;
+	if (cmd->argv[1] && (!is_numeric(cmd->argv[1])
+			|| !safe_atol(cmd->argv[1], &status)))
 	{
 		print_error("exit", cmd->argv[1], "numeric argument required");
 		shell_free(shell);
 		exit(2);
 	}
-	else if (cmd->argv[2])
+	if (cmd->argv[1] && cmd->argv[2])
 		return (print_error("exit", NULL, "too many arguments"), 1);
-	else
-		status = ft_atoi(cmd->argv[1]);
 	shell_free(shell);
-	exit(status);
+	exit(status & 255);
 }

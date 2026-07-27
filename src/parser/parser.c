@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 17:12:54 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/25 00:37:07 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 13:51:39 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,11 @@ static int	parse_redir(t_cmd *cmd, t_token **tok)
 		print_error(NULL, NULL, "syntax error near unexpected token `newline'");
 		return (-1);
 	}
-	target = strip_quotes((*tok)->value, &quoted);
+	quoted = 0;
+	if (type == REDIR_HEREDOC)
+		target = strip_quotes((*tok)->value, &quoted);
+	else
+		target = ft_strdup((*tok)->value);
 	if (target == NULL || add_redir(cmd, type, target, quoted) == -1)
 		return (free(target), -1);
 	free(target);

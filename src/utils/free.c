@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 14:58:38 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/25 01:50:05 by Visual           ###   ########.fr       */
+/*   Updated: 2026/07/27 13:55:27 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ void	free_redirs(t_redir *redirs)
 	while (redirs)
 	{
 		next = redirs->next;
+		if (redirs->heredoc_fd >= 0)
+			close(redirs->heredoc_fd);
 		free(redirs->target);
 		free(redirs);
 		redirs = next;
