@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/20 15:41:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/27 17:56:21 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/03 16:51:40 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,20 @@ int	execute(t_shell *shell)
 	return (run_pipeline(shell));
 }
 
-static void	report_quit(int wstatus)
+static void	report_signal(int wstatus)
 {
-	if (WTERMSIG(wstatus) != SIGQUIT)
-		return ;
-	ft_putstr_fd("Quit", STDERR_FILENO);
-	if (WCOREDUMP(wstatus))
-		ft_putstr_fd(" (core dumped)", STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
+	int	sig;
+
+	sig = WTERMSIG(wstatus);
+	if (sig == SIGINT)
+		ft_putstr_fd("\n", STDERR_FILENO);
+	else if (sig == SIGQUIT)
+	{
+		ft_putstr_fd("Quit", STDERR_FILENO);
+		if (WCOREDUMP(wstatus))
+			ft_putstr_fd(" (core dumped)", STDERR_FILENO);
+		ft_putstr_fd("\n", STDERR_FILENO);
+	}
 }
 
 int	exit_code_from(int wstatus)
@@ -35,7 +41,7 @@ int	exit_code_from(int wstatus)
 		return (WEXITSTATUS(wstatus));
 	if (WIFSIGNALED(wstatus))
 	{
-		report_quit(wstatus);
+		report_signal(wstatus);
 		return (128 + WTERMSIG(wstatus));
 	}
 	return (1);

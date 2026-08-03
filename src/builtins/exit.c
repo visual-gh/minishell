@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/17 19:52:55 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/27 18:15:12 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/03 16:37:18 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,17 @@ static int	safe_atol(char *str, long *out)
 	return (1);
 }
 
+static void	print_exit(t_shell *shell)
+{
+	if (isatty(STDIN_FILENO) && !shell->in_child)
+		ft_putstr_fd("exit\n", STDERR_FILENO);
+}
+
 int	ft_exit(t_cmd *cmd, t_shell *shell)
 {
 	long	status;
 
+	print_exit(shell);
 	status = shell->last_status;
 	if (cmd->argv[1] && (!is_numeric(cmd->argv[1])
 			|| !safe_atol(cmd->argv[1], &status)))

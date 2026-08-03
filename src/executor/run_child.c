@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 18:52:16 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/27 17:53:22 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/03 16:56:59 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 	char	**envp;
 
 	signals_child();
+	shell->in_child = 1;
 	if (apply_redirs(cmd->redirs) < 0)
 		exit(1);
 	if (!cmd->argv || !cmd->argv[0])
@@ -57,6 +58,7 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 	execve(path, cmd->argv, envp);
 	if (envp != shell->envp)
 		free(envp);
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	perror(path);
 	exit(126);
 }

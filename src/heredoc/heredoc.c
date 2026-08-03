@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/20 17:12:32 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/25 02:24:04 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/03 17:01:17 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ int	read_heredocs(t_shell *shell)
 	signals_prompt();
 	if (g_signal)
 	{
+		ft_putstr_fd("\n", STDERR_FILENO);
 		shell->last_status = 130;
 		g_signal = 0;
 		ret = -1;
