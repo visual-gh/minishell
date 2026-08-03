@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 16:03:46 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/27 13:30:41 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/03 19:38:53 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,16 @@ static char	*search_dirs(char **dirs, char *cmd)
 		i++;
 	}
 	return (denied);
+}
+
+char	*not_found_msg(char *cmd, char **envp)
+{
+	char	*path;
+
+	path = env_get(envp, "PATH");
+	if (ft_strchr(cmd, '/') || !path || !*path)
+		return (strerror(ENOENT));
+	return ("command not found");
 }
 
 char	*resolve_path(char *cmd, char **envp)

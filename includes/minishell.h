@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/08/03 16:38:34 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/03 19:39:02 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,6 +160,7 @@ char	*expand_var(char *str, int *i, t_shell *shell);
 int		execute(t_shell *shell);
 int		apply_redirs(t_redir *redirs);
 char	*resolve_path(char *cmd, char **envp);
+char	*not_found_msg(char *cmd, char **envp);
 int		is_builtin(char *name);
 int		run_builtin(t_cmd *cmd, t_shell *shell);
 int		exit_code_from(int wstatus);

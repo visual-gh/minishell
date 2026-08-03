@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 18:52:16 by Visual            #+#    #+#             */
-/*   Updated: 2026/08/03 16:56:59 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/03 19:41:44 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,23 @@ static char	**exported_envp(char **envp)
 	return (out);
 }
 
+static void	exec_fail(char *path, int err)
+{
+	struct stat	st;
+
+	errno = err;
+	if (err == EACCES && stat(path, &st) == 0 && S_ISDIR(st.st_mode))
+		errno = EISDIR;
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	perror(path);
+	exit(126);
+}
+
 void	run_child(t_shell *shell, t_cmd *cmd)
 {
 	char	*path;
 	char	**envp;
+	int		err;
 
 	signals_child();
 	shell->in_child = 1;
@@ -51,14 +64,14 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 	path = resolve_path(cmd->argv[0], shell->envp);
 	if (!path)
 	{
-		print_error(cmd->argv[0], NULL, "command not found");
+		print_error(cmd->argv[0], NULL,
+			not_found_msg(cmd->argv[0], shell->envp));
 		exit(127);
 	}
 	envp = exported_envp(shell->envp);
 	execve(path, cmd->argv, envp);
+	err = errno;
 	if (envp != shell->envp)
 		free(envp);
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	perror(path);
-	exit(126);
+	exec_fail(path, err);
 }
