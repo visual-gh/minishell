@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 17:12:09 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/27 13:39:57 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/03 19:55:25 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	run_with_redirs(t_shell *shell, t_cmd *cmd)
 	saved_out = dup(STDOUT_FILENO);
 	if (apply_redirs(cmd->redirs) < 0)
 		status = 1;
-	else if (cmd->argv)
+	else if (cmd->argv && cmd->argv[0])
 		status = run_builtin(cmd, shell);
 	else
 		status = 0;

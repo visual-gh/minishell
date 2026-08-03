@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 16:03:46 by Visual            #+#    #+#             */
-/*   Updated: 2026/08/03 19:38:53 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/03 19:56:37 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ char	*resolve_path(char *cmd, char **envp)
 	char	**dirs;
 	char	*full;
 
+	if (!*cmd)
+		return (NULL);
 	if (ft_strchr(cmd, '/'))
 		return (resolve_slash(cmd));
 	path = env_get(envp, "PATH");
