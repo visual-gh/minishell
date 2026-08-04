@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 18:42:29 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/22 19:54:47 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/04 19:18:59 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,10 @@ static pid_t	*spawn_children(t_shell *shell, int **pipes, int total)
 		if (pids[i] < 0)
 			return (print_error(NULL, NULL, "fork failed"), free(pids), NULL);
 		if (pids[i] == 0)
+		{
+			free(pids);
 			child_body(shell, cmd, pipes, i);
+		}
 		cmd = cmd->next;
 		i++;
 	}

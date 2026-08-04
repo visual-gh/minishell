@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/19 18:52:16 by Visual            #+#    #+#             */
-/*   Updated: 2026/08/03 19:41:44 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/04 19:46:32 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,13 @@ static char	**exported_envp(char **envp)
 	return (out);
 }
 
-static void	exec_fail(char *path, int err)
+static void	child_exit(t_shell *shell, int status)
+{
+	shell_free(shell);
+	exit(status);
+}
+
+static void	exec_fail(t_shell *shell, char *path, int err)
 {
 	struct stat	st;
 
@@ -44,7 +50,8 @@ static void	exec_fail(char *path, int err)
 		errno = EISDIR;
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	perror(path);
-	exit(126);
+	free(path);
+	child_exit(shell, 126);
 }
 
 void	run_child(t_shell *shell, t_cmd *cmd)
@@ -56,22 +63,22 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 	signals_child();
 	shell->in_child = 1;
 	if (apply_redirs(cmd->redirs) < 0)
-		exit(1);
+		child_exit(shell, 1);
 	if (!cmd->argv || !cmd->argv[0])
-		exit(0);
+		child_exit(shell, 0);
 	if (is_builtin(cmd->argv[0]))
-		exit(run_builtin(cmd, shell));
+		child_exit(shell, run_builtin(cmd, shell));
 	path = resolve_path(cmd->argv[0], shell->envp);
 	if (!path)
 	{
 		print_error(cmd->argv[0], NULL,
 			not_found_msg(cmd->argv[0], shell->envp));
-		exit(127);
+		child_exit(shell, 127);
 	}
 	envp = exported_envp(shell->envp);
 	execve(path, cmd->argv, envp);
 	err = errno;
 	if (envp != shell->envp)
 		free(envp);
-	exec_fail(path, err);
+	exec_fail(shell, path, err);
 }
