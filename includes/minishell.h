@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 22:01:28 by Visual            #+#    #+#             */
-/*   Updated: 2026/08/03 19:39:02 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/04 18:51:33 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ typedef struct s_shell
 {
 	char			**envp;
 	t_cmd			*cmds;
+	t_token			*tokens;
+	char			*line;
 	int				last_status;
 	int				in_child;
 }	t_shell;

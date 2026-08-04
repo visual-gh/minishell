@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 14:58:38 by Visual            #+#    #+#             */
-/*   Updated: 2026/07/27 13:55:27 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/04 18:55:20 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ void	shell_free(t_shell *shell)
 	if (!shell)
 		return ;
 	free_cmd_list(shell->cmds);
+	free_tokens(shell->tokens);
+	free(shell->line);
 	free_str_array(shell->envp);
 	free(shell);
 }
