@@ -6,7 +6,7 @@
 /*   By: Visual <github.com/visual-gh>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/13 17:12:54 by Daniela           #+#    #+#             */
-/*   Updated: 2026/07/27 13:51:39 by Visual           ###   ########.fr       */
+/*   Updated: 2026/08/04 21:26:15 by Visual           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,10 +76,9 @@ static int	parse_cmd(t_cmd *cmd, t_token **tok)
 	count = count_all_words(*tok);
 	if (count > 0)
 	{
-		cmd->argv = malloc(sizeof(char *) * (count + 1));
+		cmd->argv = ft_calloc(count + 1, sizeof(char *));
 		if (cmd->argv == NULL)
 			return (-1);
-		cmd->argv[count] = NULL;
 	}
 	if (fill_words(cmd, tok) == -1)
 		return (-1);

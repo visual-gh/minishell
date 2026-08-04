@@ -54,7 +54,7 @@ static int	expand_argv(t_cmd *cmd, t_shell *shell)
 		raw = cmd->argv[i];
 		expanded = expand_word(raw, shell);
 		if (!expanded)
-			return (0);
+			return (cmd->argv[j] = NULL, 0);
 		if (drop_word(raw, expanded))
 			free(expanded);
 		else
